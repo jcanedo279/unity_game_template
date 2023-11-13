@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8585aedc03ae9e348bf5a9172ebf3210, type: 3}
+  m_Name: UIComponentManagerData
+  m_EditorClassIdentifier: Assembly-CSharp::UIComponentManagerData
+  uiTheme: {fileID: 11400000, guid: bc0e29ba628a2c640bad7223ad56f198, type: 2}
+  uiComponentPrefab: {fileID: 7152144558393200266, guid: 854ebd98fb15d504bb099ccc90375aea, type: 3}
+  MainMenuComponent: {fileID: 11400000, guid: 612b1aa23d60d8d48a50b90102e5d7fe, type: 2}
+  SettingsComponent: {fileID: 11400000, guid: 78cae7546b286b14fa78dc4a20d79aaf, type: 2}
+  BackComponent: {fileID: 11400000, guid: b7920afa08e4ebd4290e02df23fa9882, type: 2}
