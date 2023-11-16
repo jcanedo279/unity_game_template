@@ -5,7 +5,7 @@ using System.Collections.Generic;
 // This class just listens to different channels and uses them to update the GameState multiCriteria.
 public class GameStateDriver : MonoBehaviour {
     private UIObjectResponseEventChannelListener onClickUIObjectEventChannelListener;
-    [SerializeField] StringBoolMapEventChannel gameStateTransitionMultiCriteriaEventChannel;
+    [SerializeField] GameStateEventChannel gameStateEventChannel;
 
     public void Awake() {
         onClickUIObjectEventChannelListener = GetComponent<UIObjectResponseEventChannelListener>();
@@ -19,9 +19,7 @@ public class GameStateDriver : MonoBehaviour {
         string uiComponentName = uiObjectResponse.uiComponentName;
 
         if (uiObjectName=="ButtonPlay" && uiComponentName=="MainMenuComponent") {
-            gameStateTransitionMultiCriteriaEventChannel.RaiseEvent(new Dictionary<string,bool>{
-                {"isCriteriaMetAquariumRequest",true},
-            });
+            gameStateEventChannel.RaiseEvent(GameState.GAME_STATE_AQUARIUM);
         }
     }
 }

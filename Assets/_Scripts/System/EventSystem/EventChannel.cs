@@ -4,10 +4,6 @@ using System.Collections.ObjectModel;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "HashSetEventChannel", menuName = "Event System/Channels/Hash Set Event Channel", order = 3)]
-public class HashSetEventChannel : ParameterizedEventChannel<HashSet<object>> {}
-
-
 /// <summary>
 /// Parameterized global event channel for relaying/broadcasting messages.
 /// </summary>

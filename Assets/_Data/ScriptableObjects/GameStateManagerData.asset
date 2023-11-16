@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f27de39cf3a47f47aed6fcbe49ffe01, type: 3}
   m_Name: GameStateManagerData
   m_EditorClassIdentifier: 
-  onGameStateTransitionMultiCriteriaMetEventChannel: {fileID: 11400000, guid: f501adde3a6b45b4d97c9a3aa86f775d, type: 2}
   gameAudioRequestEventChannel: {fileID: 11400000, guid: 69e9007c2d6d7fa4294c3bef75846fe6, type: 2}
   startBackgroundMusicGameAudioRequest: {fileID: 11400000, guid: fe92ea94e0bf64c4ca24a6c455a465b3, type: 2}
-  gameState: 0
+  gameSceneManagerData: {fileID: 11400000, guid: c38824c53b6f4224fb7babdce94aa2ea, type: 2}
+  currentGameState: 1
   numAsyncLoads: 2

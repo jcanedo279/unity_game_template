@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 public enum GameState {
@@ -14,77 +16,72 @@ public enum GameState {
 /// <summary>
 /// GameStateManager based on Addresseable Scenes.
 /// </summary>
-public class GameStateManager : MonoBehaviour
+public class GameStateManager : ParameterizedEventChannelListener<GameState>
 {
-    [SerializeField] private GameStateManagerData gameStateManagerData;
-    [SerializeField] public GameSceneManagerData gameSceneManagerData;
-    [SerializeField] StringBoolMapEventChannel gameStateTransitionMultiCriteriaEventChannel;
-    StringEventChannelListener onGameStateTransitionMultiCriteriaMetEventChannelListener;
-    public static Dictionary<string,GameState> gameStateNameToGameState = new Dictionary<string,GameState> {
-        {"multiCriteriaGameStateTransitionToAquarium",GameState.GAME_STATE_AQUARIUM},
-    };
+    // INTERNAL - OVERRIDE LISTENER
+    // ------------------------------------------------------------------------------------------------------
+    [Serializable]
+    private class UnityEvent : UnityEvent<GameState> {}
 
-    void Awake() {
-        onGameStateTransitionMultiCriteriaMetEventChannelListener
-            = GetComponent<StringEventChannelListener>();
+    [SerializeField] UnityEvent _unityEventResponse;
+
+    private void Awake() {
+        if (_unityEventResponse == null) _unityEventResponse = new UnityEvent();
     }
+
+    protected override void AddListener(UnityAction<GameState> action) => _unityEventResponse.AddListener(action);
+    protected override void RemoveListener(UnityAction<GameState> action) => _unityEventResponse.RemoveListener(action);
+
+    protected override void InvokeUnityEventResponse(GameState nextGameState) {
+        SetGameState(nextGameState);
+        _unityEventResponse.Invoke(nextGameState);
+    }
+
+
+    // GameStateManager
+    // ------------------------------------------------------------------------------------------------------
+    [SerializeField] private GameStateManagerData gameStateManagerData;
 
     void Start() {
         if (!gameStateManagerData) {
-            Debug.Log("No GameStateManagerData ScriptableObject loaded :<");
-            return;
+            throw new System.ArgumentNullException("No GameStateManagerData ScriptableObject loaded :<");
         }
         
         InitializeMutableGameStateManagerData();
         SetGameState(GameState.GAME_STATE_START_DAY);
         LoadSharedScenes();
-
-        gameStateTransitionMultiCriteriaEventChannel.RaiseEvent(new Dictionary<string,bool>{
-            {"isCriteriaMetSceneLoad",true},
-            {"isCriteriaMetDataLoad",true}, // In the future this should come from data.
-        });
     }
 
     void InitializeMutableGameStateManagerData() {
-        gameStateManagerData.gameState = GameState.GAME_STATE_DEFAULT;
+        gameStateManagerData.currentGameState = GameState.GAME_STATE_DEFAULT;
         gameStateManagerData.numAsyncLoads = 1;
-    }
-
-    public void onGameStateTransitionMultiCriteriaMet(string gameStateTransitionName) {
-        if (!gameStateNameToGameState.ContainsKey(gameStateTransitionName)) {
-            Debug.Log($"Could not interpret gameStateTransition: {gameStateTransitionName} to GameState :<");
-            return;
-        }
-        GameState nextGameState = GameStateManager.gameStateNameToGameState[gameStateTransitionName];
-        print($"GameState transition to: {gameStateTransitionName} intercepted, forwarding to state: {nextGameState}");
-        SetGameState(nextGameState);
     }
 
     public void SetGameState(GameState nextGameState) {
-        if (nextGameState == gameStateManagerData.gameState) {
+        if (gameStateManagerData.currentGameState == nextGameState) {
             return;
         }
         gameStateManagerData.numAsyncLoads = 1;
-        int requiredNumberScenesLoaded = gameStateManagerData.gameStateToSceneNames[nextGameState].Count;
+        int requiredNumberScenesLoaded = GameStateManagerData.gameStateToSceneNames[nextGameState].Count;
         // Load next scenes.
-        foreach (string sceneName in gameStateManagerData.gameStateToSceneNames[nextGameState]) {
+        foreach (string sceneName in GameStateManagerData.gameStateToSceneNames[nextGameState]) {
             StartCoroutine(GameSceneManager.LoadSceneAsyncByName(sceneName,
-                gameSceneManagerData:gameSceneManagerData,
+                gameSceneManagerData:gameStateManagerData.gameSceneManagerData,
                 onComplete:()=>{ OnGameStateSceneComplete(requiredNumberScenesLoaded,nextGameState); }));
         }
     }
 
     void LoadSharedScenes() {
-        foreach (string sceneName in gameStateManagerData.sharedSceneNames) {
+        foreach (string sceneName in GameStateManagerData.sharedSceneNames) {
             StartCoroutine(GameSceneManager.LoadSceneAsyncByName(sceneName,
-                gameSceneManagerData:gameSceneManagerData));
+                gameSceneManagerData:gameStateManagerData.gameSceneManagerData));
         }
     }
 
     void UnloadCurrentScenes() {
-        foreach (string sceneName in gameStateManagerData.gameStateToSceneNames[gameStateManagerData.gameState]) {
+        foreach (string sceneName in GameStateManagerData.gameStateToSceneNames[gameStateManagerData.currentGameState]) {
             StartCoroutine(GameSceneManager.UnloadSceneAsyncByName(sceneName,
-                gameSceneManagerData:gameSceneManagerData));
+                gameSceneManagerData:gameStateManagerData.gameSceneManagerData));
         }
     }
 
@@ -114,7 +111,7 @@ public class GameStateManager : MonoBehaviour
             default:
                 break;
         }
-        gameStateManagerData.gameState = nextGameState;
+        gameStateManagerData.currentGameState = nextGameState;
         yield return null;
     }
 }
