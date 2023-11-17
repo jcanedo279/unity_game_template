@@ -53,24 +53,13 @@ public class UIComponentManager : MonoBehaviour {
 
     // Registers the available components (manually).
     void RegisterUIComponents() {
-        if (uiComponentManagerData.MainMenuComponent != null) {
-            RegisterUIComponent(uiComponentManagerData.MainMenuComponent);
+        foreach (UIComponent uiComponent in uiComponentManagerData.registeredComponents) {
+            uiComponentNameToComponent.Add(uiComponent.uiComponentName, uiComponent);
         }
-        if (uiComponentManagerData.SettingsComponent != null) {
-            RegisterUIComponent(uiComponentManagerData.SettingsComponent);
-        }
-        if (uiComponentManagerData.BackComponent != null) {
-            RegisterUIComponent(uiComponentManagerData.BackComponent);
-        }
-    }
-
-    protected void RegisterUIComponent(UIComponent uiComponent) {
-        uiComponentNameToComponent.Add(uiComponent.uiComponentName, uiComponent);
     }
 
     void DidReceiveUIComponentRequest(UIComponentRequest uiComponentRequest) {
         string uiComponentName = uiComponentRequest.uiComponentName;
-        print($"here too: {uiComponentName}");
         switch (uiComponentRequest.uiComponentRequestMode) {
             case (UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_ENABLE):
                 StartCoroutine(EnableUIComponent(uiComponentName));
@@ -89,21 +78,13 @@ public class UIComponentManager : MonoBehaviour {
             UIComponentManager.PrintUIComponentNotRegisered(uiComponentName);
            yield break;
         }
-        if (loadedUIComponents.Contains(uiComponentName)) {
-            print($"re-enabling: {uiComponentName}");
-            // We have already loaded the UI Component, just enable it.
-            SetUIComponentActive(uiComponentName,true);
-        } else {
+        if (!loadedUIComponents.Contains(uiComponentName)) {
             // The UI Component is not loaded, load it.
             StartCoroutine(LoadUIComponent(uiComponentName));
         }
-        activeUIComponents.Add(uiComponentName);
+        SetUIComponentActive(uiComponentName, true);
         onActiveUIComponentsChange?.Invoke(
             new UIComponentRequest(uiComponentName,UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_ENABLE));
-    }
-
-    protected void SetUIComponentActive(string uiComponentName, bool isActive) {
-        uiComponentNameToComponent[uiComponentName].uiComponentRuntime.SetActive(isActive);
     }
 
     protected IEnumerator DisableUIComponent(string uiComponentName) {
@@ -111,10 +92,18 @@ public class UIComponentManager : MonoBehaviour {
             // This component is not active, early return.
             yield break;
         }
-        uiComponentNameToComponent[uiComponentName].uiComponentRuntime.SetActive(false);
-        activeUIComponents.Remove(uiComponentName);
+        SetUIComponentActive(uiComponentName,false);
         onActiveUIComponentsChange?.Invoke(
             new UIComponentRequest(uiComponentName,UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_DISABLE));
+    }
+
+    protected void SetUIComponentActive(string uiComponentName, bool isActive) {
+        uiComponentNameToComponent[uiComponentName].uiComponentRuntime.SetActive(isActive);
+        if (isActive) {
+            activeUIComponents.Add(uiComponentName);
+        } else {
+            activeUIComponents.Remove(uiComponentName);
+        }
     }
 
     IEnumerator LoadUIComponent(string uiComponentName) {

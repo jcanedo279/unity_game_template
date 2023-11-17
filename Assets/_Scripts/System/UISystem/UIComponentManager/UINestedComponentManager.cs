@@ -46,7 +46,6 @@ public class UINestedComponentManager : UIComponentManager {
                     if (nestedHierarchySize > 0) {
                         string topNestedComponentName = nestedUIComponentNameHierarchy[nestedHierarchySize-1];
                         base.SetUIComponentActive(topNestedComponentName,false);
-                        activeUIComponents.Remove(topNestedComponentName);
                     }
                     nestedUIComponentNameHierarchy.Add(uiComponentName);
                     nestedUIComponentNames.Add(uiComponentName);
@@ -55,7 +54,6 @@ public class UINestedComponentManager : UIComponentManager {
                     if (nestedHierarchySize > 1) {
                         string underneathNestedComponentName = nestedUIComponentNameHierarchy[nestedHierarchySize-2];
                         base.SetUIComponentActive(underneathNestedComponentName,true);
-                        activeUIComponents.Add(underneathNestedComponentName);
                     }
                     nestedUIComponentNameHierarchy.Remove(uiComponentName);
                     nestedUIComponentNames.Remove(uiComponentName);
