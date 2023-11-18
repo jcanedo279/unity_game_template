@@ -9,13 +9,17 @@ public class UITheme : ScriptableObject {
     public UIStyle uiStyle = UIStyle.UI_STYLE_AQUA_GREEN;
     public TMP_FontAsset font;
 
-    public Color ColorText {get { return UIThemeUtil.colorTextFromUITheme(this); }}
-    public Color ColorBackground {get { return UIThemeUtil.colorBackgroundFromUITheme(this); }}
-    public Color ColorPrimary {get { return UIThemeUtil.colorPrimaryFromUITheme(this); }}
-    public Color ColorSecondary {get { return UIThemeUtil.colorSecondaryFromUITheme(this); }}
-    public Color ColorAccent {get { return UIThemeUtil.colorAccentFromUITheme(this); }}
-
-    public Color ColorNeutral {get { return UIThemeUtil.colorNeutralFromUITheme(this); }}
+    // IMAGE COLOR
+    // ----------------------------------------------------------------------------------------------
+    public Color ColorBackground {get { return UIThemeUtil.ColorImageBackgroundFromUITheme(this); }}
+    public Color ColorPrimary {get { return UIThemeUtil.ColorImagePrimaryFromUITheme(this); }}
+    public Color ColorSecondary {get { return UIThemeUtil.ColorImageSecondaryFromUITheme(this); }}
+    public Color ColorAccent {get { return UIThemeUtil.ColorImageAccentFromUITheme(this); }}
+    public Color ColorNeutral {get { return UIThemeUtil.ColorImageNeutralFromUITheme(this); }}
+    // TEXT COLOR
+    // ----------------------------------------------------------------------------------------------
+    public Color ColorTextPrimary {get { return UIThemeUtil.ColorTextPrimaryFromUITheme(this); }}
+    public Color ColorTextSecondary {get { return UIThemeUtil.ColorTextSecondaryFromUITheme(this); }}
 }
 
 public enum UIThemeType {
@@ -34,6 +38,10 @@ public enum UIObjectImageColor {
     UI_OBJECT_IMAGE_COLOR_ACCENT,
     UI_OBJECT_IMAGE_COLOR_NEUTRAL,
 }
+public enum UIObjectTextColor {
+    UI_OBJECT_TEXT_COLOR_PRIMARY,
+    UI_OBJECT_TEXT_COLOR_SECONDARY
+}
 
 // Themes and styles from: https://colorsui.com/.
 public static class UIThemeUtil {
@@ -42,8 +50,8 @@ public static class UIThemeUtil {
             {UIStyle.UI_STYLE_AQUA_GREEN,"AquaGreen"}
         };
 
-    public static Color ColorFromUIObjectImageColor(UIObjectImageColor uIObjectImageColor, UITheme uiTheme) {
-        switch (uIObjectImageColor) {
+    public static Color ColorFromUIObjectImageColor(UIObjectImageColor uiObjectImageColor, UITheme uiTheme) {
+        switch (uiObjectImageColor) {
             case UIObjectImageColor.UI_OBJECT_IMAGE_COLOR_BACKGROUND:
                 return uiTheme.ColorBackground;
             case UIObjectImageColor.UI_OBJECT_IMAGE_COLOR_PRIMARY:
@@ -56,6 +64,16 @@ public static class UIThemeUtil {
                 return uiTheme.ColorNeutral;
             default:
                 return uiTheme.ColorNeutral;
+        }
+    }
+    public static Color ColorFromUIObjectTextColor(UIObjectTextColor uiObjectTextColor, UITheme uiTheme) {
+        switch (uiObjectTextColor) {
+            case UIObjectTextColor.UI_OBJECT_TEXT_COLOR_PRIMARY:
+                return uiTheme.ColorTextPrimary;
+            case UIObjectTextColor.UI_OBJECT_TEXT_COLOR_SECONDARY:
+                return uiTheme.ColorTextSecondary;
+            default:
+                return uiTheme.ColorTextPrimary;
         }
     }
 
@@ -71,22 +89,16 @@ public static class UIThemeUtil {
             
         };
 
-    public static Color colorTextFromUITheme(UITheme uiTheme) {
-        switch(uiTheme.uiThemeType) {
-            case UIThemeType.UI_THEME_DARK: return Color.white;
-            case UIThemeType.UI_THEME_LIGHT: return Color.black;
-        }
-        return Color.black;
-    }
-    public static Color colorBackgroundFromUITheme(UITheme uiTheme) {
+    // IMAGE COLOR
+    // ----------------------------------------------------------------------------------------------
+    public static Color ColorImageBackgroundFromUITheme(UITheme uiTheme) {
         switch(uiTheme.uiThemeType) {
             case UIThemeType.UI_THEME_DARK: return Color.black;
             case UIThemeType.UI_THEME_LIGHT: return Color.white;
         }
         return Color.white;
     }
-
-    public static Color colorPrimaryFromUITheme(UITheme uiTheme) {
+    public static Color ColorImagePrimaryFromUITheme(UITheme uiTheme) {
         // First color is associated with 'dark' tones which works with light text.
         // Last color is associated with 'light' tones which works with dark text.
         UIStyle uiStyle = UIStyle.UI_STYLE_AQUA_GREEN;
@@ -96,8 +108,7 @@ public static class UIThemeUtil {
         }
         return Color.green;
     }
-    
-    public static Color colorSecondaryFromUITheme(UITheme uiTheme) {
+    public static Color ColorImageSecondaryFromUITheme(UITheme uiTheme) {
         // First color is associated with 'dark' tones which works with light text.
         // Last color is associated with 'light' tones which works with dark text.
         UIStyle uiStyle = UIStyle.UI_STYLE_AQUA_GREEN;
@@ -107,12 +118,27 @@ public static class UIThemeUtil {
         }
         return Color.blue;
     }
-
-    public static Color colorAccentFromUITheme(UITheme uiTheme) {
+    public static Color ColorImageAccentFromUITheme(UITheme uiTheme) {
         return UIThemeUtil.UIStyleToColorList[uiTheme.uiStyle][2];
     }
-
-    public static Color colorNeutralFromUITheme(UITheme uiTheme) {
+    public static Color ColorImageNeutralFromUITheme(UITheme uiTheme) {
         return new Color(211f/255f,211f/255f,211f/255f);
+    }
+
+    // TEXT COLOR
+    // ----------------------------------------------------------------------------------------------
+    public static Color ColorTextPrimaryFromUITheme(UITheme uiTheme) {
+        switch(uiTheme.uiThemeType) {
+            case UIThemeType.UI_THEME_DARK: return Color.white;
+            case UIThemeType.UI_THEME_LIGHT: return Color.black;
+        }
+        return Color.black;
+    }
+    public static Color ColorTextSecondaryFromUITheme(UITheme uiTheme) {
+        switch(uiTheme.uiThemeType) {
+            case UIThemeType.UI_THEME_DARK: return new Color(224f/255f,224f/255f,224f/255f);
+            case UIThemeType.UI_THEME_LIGHT: return new Color(117f/255f,117f/255f,117f/255f);
+        }
+        return new Color(224f/255f,224f/255f,224f/255f);
     }
 }

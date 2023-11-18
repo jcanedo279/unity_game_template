@@ -5,18 +5,21 @@ using TMPro;
 
 [CreateAssetMenu(fileName = "UIObject", menuName = "UI System/UI Object")]
 public class UIObject : ScriptableObject {
-    public bool isFilled = false;
     [SerializeField] public string uiObjectName;
     [SerializeField] public GameObject uiObjectPrefab;
-    public RectTransform rectTransform;
-    public GameObject uiObjectRuntime;
+
+    // Runtime properties.
+    [System.NonSerialized] public RectTransform rectTransform;
+    [System.NonSerialized] public GameObject uiObjectRuntime;
+    [System.NonSerialized] public bool isFilled = false;
 
     // UI Theme inputs.
-    [SerializeField] public UIObjectImageColor uiObjectImageColor = UIObjectImageColor.UI_OBJECT_IMAGE_COLOR_NEUTRAL;
+    [SerializeField] private UIObjectTextColor uiObjectTextColor = UIObjectTextColor.UI_OBJECT_TEXT_COLOR_PRIMARY;
+    [SerializeField] private UIObjectImageColor uiObjectImageColor = UIObjectImageColor.UI_OBJECT_IMAGE_COLOR_NEUTRAL;
     [SerializeField] private bool shouldFillImage = true;
 
     // Event handling.
-    public System.Action<string> onClickUIObjectDelegate;
+    [System.NonSerialized] public System.Action<string> onClickUIObjectDelegate;
 
 
     public virtual void OnLoad(UITheme uiTheme) {
@@ -26,6 +29,8 @@ public class UIObject : ScriptableObject {
         MaybeFillUIObject(uiTheme);
     }
 
+    // FILLERS - BASE
+    // ----------------------------------------------------------------------------------------------
     public void MaybeFillUIObject(UITheme uiTheme) {
         rectTransform = uiObjectRuntime.gameObject.GetComponent<RectTransform>();
         if (shouldFillImage) {
@@ -42,7 +47,9 @@ public class UIObject : ScriptableObject {
         uiObjectImage.color = UIThemeUtil.ColorFromUIObjectImageColor(uiObjectImageColor,uiTheme);
     }
 
-    public void MaybeFillUIObjectText(UITheme uiTheme, string textContent) {
+    // FILLERS - EXTENSIONS
+    // ----------------------------------------------------------------------------------------------
+    protected void MaybeFillUIObjectText(UITheme uiTheme, string textContent) {
         if (uiTheme.font == null) {
             // No font detected in the theme, leave as the standard.
             return;
@@ -54,9 +61,17 @@ public class UIObject : ScriptableObject {
         }
         uiObjectText.font = uiTheme.font;
         uiObjectText.text = textContent;
+        uiObjectText.color = UIThemeUtil.ColorFromUIObjectTextColor(uiObjectTextColor,uiTheme);
+        uiObjectText.fontSize = 32f;
     }
 
+    protected void MaybeFillUIObjectSize(Vector2 objectSize) {
+        rectTransform.sizeDelta = objectSize;
+    }
+
+    // CALLBACKS - EXTENSIONS
+    // ----------------------------------------------------------------------------------------------
     public virtual void OnClickUIObject() {
-        // No-op.
+        onClickUIObjectDelegate?.Invoke(uiObjectName);
     }
 }

@@ -125,8 +125,8 @@ public class UIComponentManager : MonoBehaviour {
     }
 
     IEnumerator LoadUIObject(UIComponent parentComponent,
-                                  UIObject uiObject,
-                                  Vector2 uiObjectPosition) {
+                             UIObject uiObject,
+                             Vector2 uiObjectPosition) {
         if (uiObject == null) {
             yield break;
         }

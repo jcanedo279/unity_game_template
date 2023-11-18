@@ -17,6 +17,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cf3f670ffcaa1624880c6de171c32a3d, type: 2}
   onClickUIObjectEventChannel: {fileID: 11400000, guid: 7851bebb604dfdc498225bd7bd4de2d1, type: 2}
   uiNestedComponentType: 0
-  uiComponentRuntime: {fileID: 0}
   uiObjectSpacing: 0
-  startingUIObjectPosition: {x: -150, y: 100}
+  startingUIObjectPosition: {x: -300, y: 200}

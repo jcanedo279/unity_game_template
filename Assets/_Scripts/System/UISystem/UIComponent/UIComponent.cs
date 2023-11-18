@@ -9,8 +9,8 @@ public class UIComponent : ScriptableObject {
     [SerializeField] public List<UIObject> uiObjects;
     [SerializeField] private UIObjectResponseEventChannel onClickUIObjectEventChannel;
     [SerializeField] public UINestedComponentType uiNestedComponentType;
-    public GameObject uiComponentRuntime;
-    public float uiObjectSpacing = 0f;
+    [System.NonSerialized] public GameObject uiComponentRuntime;
+    public float uiObjectSpacing = 16f;
     public Vector2 startingUIObjectPosition = new Vector2(0f,0f);
 
     public void onClickUIObject(string uiObjectName) {

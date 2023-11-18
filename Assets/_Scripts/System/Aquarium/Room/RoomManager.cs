@@ -71,4 +71,8 @@ public class RoomManager : MonoBehaviour {
         return new Vector2(room.roomData.roomIndex*roomManagerData.baseRoomSize.x,
                            room.roomData.floorIndex*roomManagerData.baseRoomSize.y);
     }
+
+    public void OnRequestOpenUI() {
+        Debug.Log("space pressed");
+    }
 }

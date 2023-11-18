@@ -7,15 +7,17 @@ using System.Collections.Generic;
 public class UIObjectButton : UIObject {
     private Button uiObjectButton;
     [SerializeField] private string buttonTextContent;
+    [SerializeField] private Vector2 buttonSize = new Vector2(320,60);
 
     public override void OnLoad(UITheme uiTheme) {
-        uiObjectButton = uiObjectRuntime.GetComponent<Button>();
-        uiObjectButton.onClick.AddListener( delegate {OnClickUIObject();} );
         base.OnLoad(uiTheme);
-        MaybeFillUIObjectText(uiTheme, buttonTextContent);
+        MaybeFillUIObjectButton(uiTheme);
     }
 
-    public override void OnClickUIObject() {
-        onClickUIObjectDelegate?.Invoke(uiObjectName);
+    private void MaybeFillUIObjectButton(UITheme uiTheme) {
+        uiObjectButton = uiObjectRuntime.GetComponent<Button>();
+        uiObjectButton.onClick.AddListener( delegate {OnClickUIObject();} );
+        MaybeFillUIObjectText(uiTheme, buttonTextContent);
+        MaybeFillUIObjectSize(buttonSize);
     }
 }
