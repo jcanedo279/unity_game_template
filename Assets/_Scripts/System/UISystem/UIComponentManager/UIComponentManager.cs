@@ -1,10 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.AddressableAssets;
-using UnityEngine.UI;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceProviders;
 
 
 public class UIComponentManager : MonoBehaviour {
@@ -67,6 +63,13 @@ public class UIComponentManager : MonoBehaviour {
             case (UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_DISABLE):
                 StartCoroutine(DisableUIComponent(uiComponentName));
                 break;
+            case (UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_FLIP_ENABLE):
+                if (activeUIComponents.Contains(uiComponentName)) {
+                    StartCoroutine(DisableUIComponent(uiComponentName));
+                } else {
+                    StartCoroutine(EnableUIComponent(uiComponentName));
+                }
+                break;
         }
     }
 
@@ -118,25 +121,12 @@ public class UIComponentManager : MonoBehaviour {
         Vector2 currentUIObjectPosition = new Vector2(uiComponent.startingUIObjectPosition.x,
                                                       uiComponent.startingUIObjectPosition.y);
         foreach (UIObject uiObject in uiComponent.uiObjects) {
-            yield return StartCoroutine(LoadUIObject(uiComponent, uiObject, currentUIObjectPosition));
+            uiObject.FillFromComponentManager(uiComponent,uiComponent.uiComponentRuntime.transform,
+                                              uiComponentManagerData.uiTheme,currentUIObjectPosition);
             currentUIObjectPosition -= new Vector2(0f,
                                                    uiObjectSpacing+uiObject.rectTransform.rect.height);
         }
-    }
-
-    IEnumerator LoadUIObject(UIComponent parentComponent,
-                             UIObject uiObject,
-                             Vector2 uiObjectPosition) {
-        if (uiObject == null) {
-            yield break;
-        }
-        uiObject.isFilled = false;
-        GameObject uiObjectClone = Instantiate(uiObject.uiObjectPrefab, parentComponent.uiComponentRuntime.transform);
-        uiObject.uiObjectRuntime = uiObjectClone;
-        uiObject.onClickUIObjectDelegate = parentComponent.onClickUIObject;
-        uiObject.OnLoad(uiComponentManagerData.uiTheme);
-        uiObject.rectTransform.localPosition = uiObjectPosition;
-        uiObject.isFilled = true;
+        yield return 0;
     }
 
     static void PrintUIComponentNotRegisered(string uiComponentName) {

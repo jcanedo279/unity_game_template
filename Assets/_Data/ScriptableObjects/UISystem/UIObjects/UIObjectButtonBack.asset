@@ -10,14 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ece96d70f5a3b864483ae1a2b9bb26c7, type: 3}
-  m_Name: UIObjectIconButton
+  m_Name: UIObjectButtonBack
   m_EditorClassIdentifier: 
-  isFilled: 0
   uiObjectName: ButtonBack
   uiObjectPrefab: {fileID: 6704284020483082079, guid: 1af1db092c368d04b83328479b52699b, type: 3}
-  rectTransform: {fileID: 0}
-  uiObjectRuntime: {fileID: 0}
+  uiObjectTextColor: 0
   uiObjectImageColor: 1
   shouldFillImage: 1
   buttonTextContent: 
+  buttonSize: {x: 320, y: 60}
   buttonIcon: {fileID: 21300000, guid: 32be22225a813fa4c80288ea1406067f, type: 3}

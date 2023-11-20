@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98236180d26aa924f992a11aaa855ed7, type: 3}
   m_Name: UIObjectButtonSettings
   m_EditorClassIdentifier: 
-  isFilled: 0
   uiObjectName: ButtonSettings
   uiObjectPrefab: {fileID: 6704284020483082079, guid: 1af1db092c368d04b83328479b52699b, type: 3}
-  uiObjectRuntime: {fileID: 0}
+  uiObjectTextColor: 0
   uiObjectImageColor: 1
   shouldFillImage: 1
-  buttonTextContent: SETTINGS!
+  buttonTextContent: SETTINGS
+  buttonSize: {x: 320, y: 60}

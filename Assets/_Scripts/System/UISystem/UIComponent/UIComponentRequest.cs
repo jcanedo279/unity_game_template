@@ -2,6 +2,7 @@ public class UIComponentRequest {
     public enum UIComponentRequestMode {
         REQUEST_MODE_ENABLE,
         REQUEST_MODE_DISABLE,
+        REQUEST_MODE_FLIP_ENABLE,
         REQUEST_MODE_UNLOAD,
     }
     private string _uiComponentName;

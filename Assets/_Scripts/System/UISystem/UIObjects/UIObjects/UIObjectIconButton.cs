@@ -2,14 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-[CreateAssetMenu(fileName = "UIObjectIconButton", menuName = "UI System/UI Object Icon Button")]
+[CreateAssetMenu(fileName = "UIObjectIconButton", menuName = "UI System/UI Objects/UI Object Icon Button")]
 public class UIObjectIconButton : UIObjectButton {
-    [SerializeField] private Sprite buttonIcon;
-    [System.NonSerialized] private GameObject iconObjectRuntime;
-    [System.NonSerialized] private Image buttonIconImage;
+    public Sprite buttonIcon;
+    [System.NonSerialized] public GameObject iconObjectRuntime;
+    [System.NonSerialized] public Image buttonIconImage;
 
-    public override void OnLoad(UITheme uiTheme) {
-        base.OnLoad(uiTheme);
+    public override void FillFromTheme(UITheme uiTheme) {
+        base.FillFromTheme(uiTheme);
         MaybeFillUIObjectIconButton(uiTheme);
     }
 

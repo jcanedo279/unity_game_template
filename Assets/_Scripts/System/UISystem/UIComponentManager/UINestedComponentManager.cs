@@ -11,12 +11,22 @@ public class UINestedComponentManager : UIComponentManager {
     private List<string> nestedUIComponentNameHierarchy;
     private HashSet<string> nestedUIComponentNames;
     private HashSet<string> leafUIComponentNames;
-
+    // Map from UIObject name to how it should interact with the UI nested hierarchy and leaf components.
     private static Dictionary<string,UIObjectResponseInterpretation> uiObjectNameToResponseInterpretation
         = new Dictionary<string,UIObjectResponseInterpretation> {
-            {"ButtonSettings", new UIObjectResponseInterpretation("SettingsComponent")},
-            {"ButtonBack", new UIObjectResponseInterpretation(UINestedComponentInterpretationType.INTERPRETATION_POP)},
-            {"ButtonPlay", new UIObjectResponseInterpretation(UINestedComponentInterpretationType.INTERPRETATION_POP)},
+            {"ButtonSettings", new UIObjectResponseInterpretation(
+                                nestedInterpretations:
+                                    new List<UIObjectResponseNestedInterpretation>{
+                new UIObjectResponseNestedInterpretation("SettingsComponent")})},
+            {"ButtonBack", new UIObjectResponseInterpretation(
+                                nestedInterpretations:
+                                    new List<UIObjectResponseNestedInterpretation>{
+                new UIObjectResponseNestedInterpretation(UINestedComponentInterpretationType.INTERPRETATION_POP)})},
+            // {"ButtonPlay", new UIObjectResponseInterpretation(UINestedComponentInterpretationType.INTERPRETATION_POP)},
+            {"ButtonPlay", new UIObjectResponseInterpretation(
+                                nestedInterpretations:
+                                    new List<UIObjectResponseNestedInterpretation>{
+                new UIObjectResponseNestedInterpretation(UINestedComponentInterpretationType.INTERPRETATION_POP)})},
         };
 
     protected override void Awake() {
@@ -73,64 +83,80 @@ public class UINestedComponentManager : UIComponentManager {
     void OnClickUIObject(UIObjectResponse uiObjectResponse) {
         string uiObjectName = uiObjectResponse.uiObjectName;
         string uiComponentName = uiObjectResponse.uiComponentName;
+        if (uiObjectResponse.uiObjectValue != null) {
+            print($"UIObject value is: {uiObjectResponse.uiObjectValue}");
+        }
         print($"Intercepting ObjectResponse object: {uiObjectName} from component: {uiComponentName}.");
 
         if (!uiObjectNameToResponseInterpretation.ContainsKey(uiObjectName)) {
             return;
         }
         UIObjectResponseInterpretation objectResponseInterpretation = uiObjectNameToResponseInterpretation[uiObjectName];
-    
-        int nestedHierarchySize = nestedUIComponentNameHierarchy.Count;
-        switch (objectResponseInterpretation.currentNestedUIComponentInterpretationType) {
-            case UINestedComponentInterpretationType.INTERPRETATION_POP:
-                if (nestedHierarchySize == 0) {
-                    throw new System.ArgumentOutOfRangeException(
-                        $"UI Object: {uiObjectName} is trying to 'POP' an empty nested hierarchy :<");
-                }
-                // Maybe delete the back button when removing a nested UI layer.
-                // Do this before disabling the current nested component to get an accurate hierarchy size.
-                if (activeUIComponents.Contains("BackComponent") && nestedHierarchySize<=2) {
-                    StartCoroutine(DisableUIComponent("BackComponent"));
-                }
-                StartCoroutine(DisableUIComponent(nestedUIComponentNameHierarchy[nestedHierarchySize-1]));
-                break;
-            case UINestedComponentInterpretationType.INTERPRETATION_ADD:
-                // Maybe add the back button when adding a nested UI layer.
-                if (!activeUIComponents.Contains("BackComponent") && nestedHierarchySize>0) {
-                    StartCoroutine(EnableUIComponent("BackComponent"));
-                }
-                StartCoroutine(EnableUIComponent(objectResponseInterpretation.targetNestedUIComponentName));
-                break;
+
+        // Loop over list of response interpretations on nested hierarchy.
+        foreach (UIObjectResponseNestedInterpretation nestedInterpretation in objectResponseInterpretation.nestedInterpretations) {
+            int nestedHierarchySize = nestedUIComponentNameHierarchy.Count;
+            switch (nestedInterpretation.currentNestedUIComponentInterpretationType) {
+                case UINestedComponentInterpretationType.INTERPRETATION_POP:
+                    if (nestedHierarchySize == 0) {
+                        throw new System.ArgumentOutOfRangeException(
+                            $"UI Object: {uiObjectName} is trying to 'POP' an empty nested hierarchy :<");
+                    }
+                    // Maybe delete the back button when removing a nested UI layer.
+                    // Do this before disabling the current nested component to get an accurate hierarchy size.
+                    if (activeUIComponents.Contains("BackComponent") && nestedHierarchySize<=2) {
+                        StartCoroutine(DisableUIComponent("BackComponent"));
+                    }
+                    StartCoroutine(DisableUIComponent(nestedUIComponentNameHierarchy[nestedHierarchySize-1]));
+                    break;
+                case UINestedComponentInterpretationType.INTERPRETATION_ADD:
+                    // Maybe add the back button when adding a nested UI layer.
+                    if (!activeUIComponents.Contains("BackComponent") && nestedHierarchySize>0) {
+                        StartCoroutine(EnableUIComponent("BackComponent"));
+                    }
+                    StartCoroutine(EnableUIComponent(nestedInterpretation.targetNestedUIComponentName));
+                    break;
+            }
         }
+        // Loop over list of response interpretations on leaf components.
         foreach (string targetLeafUIComponentName in objectResponseInterpretation.targetLeafUIComponentNames) {
             StartCoroutine(EnableUIComponent(targetLeafUIComponentName));
         }
     }
 
     public class UIObjectResponseInterpretation {
-        public UINestedComponentInterpretationType currentNestedUIComponentInterpretationType;
+        public List<UIObjectResponseNestedInterpretation> nestedInterpretations;
         public List<string> targetLeafUIComponentNames = new List<string>();
-        public string targetNestedUIComponentName = "";
 
-        public UIObjectResponseInterpretation(UINestedComponentInterpretationType currentNestedUIComponentInterpretationType,
-                                              List<string> targetLeafUIComponentNames = null) {
-            if (currentNestedUIComponentInterpretationType == UINestedComponentInterpretationType.INTERPRETATION_ADD) {
-                throw new System.ArgumentOutOfRangeException("The interpretationType: Add reques a component to add, use the other constructor.");
+        public UIObjectResponseInterpretation(List<UIObjectResponseNestedInterpretation> nestedInterpretations=null,
+                                              List<string> targetLeafUIComponentNames=null) {
+            if (nestedInterpretations==null) {
+                this.nestedInterpretations = new List<UIObjectResponseNestedInterpretation>();
+            } else {
+                this.nestedInterpretations = nestedInterpretations;
             }
-            this.currentNestedUIComponentInterpretationType = currentNestedUIComponentInterpretationType;
-            MaybeAddTargetLeafUIComponentNames(targetLeafUIComponentNames);
-        }
-        public UIObjectResponseInterpretation(string targetNestedUIComponentName,
-                                              List<string> targetLeafUIComponentNames = null) {
-            this.targetNestedUIComponentName = targetNestedUIComponentName;
-            this.currentNestedUIComponentInterpretationType = UINestedComponentInterpretationType.INTERPRETATION_ADD;
-            MaybeAddTargetLeafUIComponentNames(targetLeafUIComponentNames);
-        }
-        public void MaybeAddTargetLeafUIComponentNames(List<string> targetLeafUIComponentNames = null) {
-            if (targetLeafUIComponentNames != null) {
+            if (targetLeafUIComponentNames==null) {
+                this.targetLeafUIComponentNames = new List<string>();
+            } else {
                 this.targetLeafUIComponentNames = targetLeafUIComponentNames;
             }
         }
+    }
+}
+
+public class UIObjectResponseNestedInterpretation {
+    public UINestedComponentInterpretationType currentNestedUIComponentInterpretationType;
+    public string targetNestedUIComponentName = "";
+    public UIObjectResponseNestedInterpretation(
+            UINestedComponentInterpretationType currentNestedUIComponentInterpretationType) {
+        if (currentNestedUIComponentInterpretationType == UINestedComponentInterpretationType.INTERPRETATION_ADD) {
+            throw new System.ArgumentOutOfRangeException("The interpretationType: Add reques a component to add, use the other constructor.");
+        }
+        this.currentNestedUIComponentInterpretationType = currentNestedUIComponentInterpretationType;
+    }
+    public UIObjectResponseNestedInterpretation(string targetNestedUIComponentName) {
+        this.targetNestedUIComponentName = targetNestedUIComponentName;
+        this.currentNestedUIComponentInterpretationType = UINestedComponentInterpretationType.INTERPRETATION_ADD;
     }
 }
 

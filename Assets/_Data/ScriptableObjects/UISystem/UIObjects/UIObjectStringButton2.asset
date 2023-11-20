@@ -7,15 +7,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98236180d26aa924f992a11aaa855ed7, type: 3}
-  m_Name: UIObjectButtonPlay
+  m_Script: {fileID: 11500000, guid: 4477b8f98f5c3c8418e0206e7de090e0, type: 3}
+  m_Name: UIObjectStringButton2
   m_EditorClassIdentifier: 
-  uiObjectName: ButtonPlay
+  uiObjectName: ButtonStringValue2
   uiObjectPrefab: {fileID: 6704284020483082079, guid: 1af1db092c368d04b83328479b52699b, type: 3}
   uiObjectTextColor: 0
-  uiObjectImageColor: 1
+  uiObjectImageColor: 2
   shouldFillImage: 1
-  buttonTextContent: PLAY!
+  buttonTextContent: StringValue2
   buttonSize: {x: 320, y: 60}
