@@ -20,6 +20,15 @@ public class UITheme : ScriptableObject
             _ => defaultUISpacing,
         };
     }
+    private const float defaultUIMargin = 16f;
+    public float UIMarginValueFromEnum(UIMargin uiMargin)
+    {
+        return uiMargin switch
+        {
+            UIMargin.UI_MARGIN_DEFAULT => defaultUIMargin,
+            _ => defaultUIMargin,
+        };
+    }
 
     // IMAGE COLOR
     // ----------------------------------------------------------------------------------------------
@@ -48,6 +57,10 @@ public enum UISpacing
     UI_SPACING_DEFAULT,
     UI_SPACING_HALF,
     UI_SPACING_DOUBLE,
+}
+public enum UIMargin
+{
+    UI_MARGIN_DEFAULT
 }
 
 public enum UIObjectImageColor

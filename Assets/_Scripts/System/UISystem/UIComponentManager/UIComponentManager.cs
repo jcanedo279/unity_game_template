@@ -117,8 +117,8 @@ public class UIComponentManager : MonoBehaviour {
         loadedUIComponents.Add(uiComponentName);
 
         // Iterate over sub objects and load them.
-        float uiObjectSpacing = uiComponent.uiObjectSpacing;
-        Vector2 currentUIObjectPosition = new Vector2(uiComponent.startingUIObjectPosition.x,
+        float uiObjectSpacing = uiComponentManagerData.uiTheme.UISpacingValueFromEnum(uiComponent.uiObjectSpacing);
+        Vector2 currentUIObjectPosition = new(uiComponent.startingUIObjectPosition.x,
                                                       uiComponent.startingUIObjectPosition.y);
         foreach (UIObject uiObject in uiComponent.uiObjects) {
             uiObject.FillFromComponentManager(uiComponent,uiComponent.uiComponentRuntime.transform,
