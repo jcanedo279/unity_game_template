@@ -3,24 +3,11 @@ using UnityEngine.UI;
 
 
 [CreateAssetMenu(fileName = "UIObjectIconButton", menuName = "UI System/UI Objects/UI Object Icon Button")]
-public class UIObjectIconButton : UIObjectButton {
-    public Sprite buttonIcon;
+public class UIObjectIconButton : UIObjectButton, IUIObjectWithImageChild {
     [System.NonSerialized] public GameObject iconObjectRuntime;
-    [System.NonSerialized] public Image buttonIconImage;
 
-    public override void FillFromTheme(UITheme uiTheme) {
-        base.FillFromTheme(uiTheme);
-        MaybeFillUIObjectIconButton(uiTheme);
-    }
-
-    public void MaybeFillUIObjectIconButton(UITheme uiTheme) {
-        if (buttonIcon == null) {
-            Debug.Log("A button icon (Sprite) is required for the IconButton to render.");
-            return;
-        }
-        iconObjectRuntime = new GameObject(buttonIcon.name);
-        iconObjectRuntime.transform.SetParent(uiObjectRuntime.transform, false);
-        buttonIconImage = iconObjectRuntime.AddComponent<Image>();
-        buttonIconImage.sprite = buttonIcon;
-    }
+    // INTERFACE - IUIObjectWithImage
+    [SerializeField] private Sprite _imageSprite;
+    public Sprite childImageSprite { get { return _imageSprite; } }
+    public Image childImage { get; set; }
 }

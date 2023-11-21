@@ -49,31 +49,12 @@ public class UIObjectContainer : UIObject
 
         float objectSpacing = uiTheme.UISpacingValueFromEnum(parentComponent.uiObjectSpacing);
         int objectMargin = (int)uiTheme.UIMarginValueFromEnum(parentComponent.uiObjectMargin);
-        FillLayoutDirection();
+        FillScrollDirection();
 
         // Fill in container transform (including size).
-        rectTransform = uiObjectRuntime.gameObject.GetComponent<RectTransform>();
+        rectTransform = uiObjectRuntime.GetComponent<RectTransform>();
         rectTransform.localPosition = uiObjectPosition;
-        switch (layoutDirection) {
-            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_HORIZONTAL:
-                rectTransform.sizeDelta = new Vector2(2 * objectMargin + 2 * objectSpacing + 2.5f * items[0].buttonSize.x,
-                                              2 * objectMargin + items[0].buttonSize.y);
-                break;
-            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_VERTICAL:
-                rectTransform.sizeDelta = new Vector2(2 * objectMargin  + items[0].buttonSize.x,
-                                                      2 * objectMargin + 2 * objectSpacing + 2.5f * items[0].buttonSize.y);
-                break;
-            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_HORIZONTAL:
-                rectTransform.sizeDelta = new Vector2(2 * objectMargin + (items.Count-1) * objectSpacing
-                                                        + items.Count * items[0].buttonSize.x,
-                                                      2 * objectMargin  + items[0].buttonSize.y);
-                break;
-            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_VERTICAL:
-                rectTransform.sizeDelta = new Vector2(2 * objectMargin  + items[0].buttonSize.x,
-                                                      2 * objectMargin + (items.Count-1) * objectSpacing
-                                                        + items.Count * items[0].buttonSize.y);
-                break;
-        }
+        FillContainerSize(objectSpacing,objectMargin);
         // Fill in item spacing.
         HorizontalOrVerticalLayoutGroup layoutGroup = layoutDirection switch
         {
@@ -95,7 +76,7 @@ public class UIObjectContainer : UIObject
         }
     }
 
-    public void FillLayoutDirection()
+    public void FillScrollDirection()
     {
         ScrollRect scrollRect = uiObjectRuntime.gameObject.GetComponent<ScrollRect>();
         switch (layoutDirection)
@@ -109,6 +90,29 @@ public class UIObjectContainer : UIObject
             case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_HORIZONTAL:
             case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_VERTICAL:
                 scrollRect.enabled = false;
+                break;
+        }
+    }
+
+    public void FillContainerSize(float objectSpacing, int objectMargin) {
+        switch (layoutDirection) {
+            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_HORIZONTAL:
+                rectTransform.sizeDelta = new Vector2(2 * objectMargin + 2 * objectSpacing + 2.5f * items[0].objectSize.x,
+                                              2 * objectMargin + items[0].objectSize.y);
+                break;
+            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_VERTICAL:
+                rectTransform.sizeDelta = new Vector2(2 * objectMargin  + items[0].objectSize.x,
+                                                      2 * objectMargin + 2 * objectSpacing + 2.5f * items[0].objectSize.y);
+                break;
+            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_HORIZONTAL:
+                rectTransform.sizeDelta = new Vector2(2 * objectMargin + (items.Count-1) * objectSpacing
+                                                        + items.Count * items[0].objectSize.x,
+                                                      2 * objectMargin  + items[0].objectSize.y);
+                break;
+            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_VERTICAL:
+                rectTransform.sizeDelta = new Vector2(2 * objectMargin  + items[0].objectSize.x,
+                                                      2 * objectMargin + (items.Count-1) * objectSpacing
+                                                        + items.Count * items[0].objectSize.y);
                 break;
         }
     }
