@@ -6,9 +6,7 @@ public class UIObject : ScriptableObject {
     public string uiObjectName;
     public GameObject uiObjectPrefab;
     // Runtime properties.
-    [System.NonSerialized] public RectTransform rectTransform;
-    [System.NonSerialized] public GameObject uiObjectRuntime;
-    [System.NonSerialized] public bool isFilled = false;
+    public UIObjectRuntimeProperties uiObjectRuntimeProperties;
 
 
     public virtual void FillFromComponentManager(UIComponent parentComponent,
@@ -16,27 +14,30 @@ public class UIObject : ScriptableObject {
                       Transform parentTransform,
                       UITheme uiTheme,
                       Vector2 uiObjectPosition) {
-        isFilled = false;
-        uiObjectRuntime = Instantiate(uiObjectPrefab, parentTransform);
-        rectTransform = uiObjectRuntime.gameObject.GetComponent<RectTransform>();
-        rectTransform.localPosition = uiObjectPosition;
-        InterfaceBasedFilling(parentComponent, uiTheme);
-        isFilled = true;
+        uiObjectRuntimeProperties = new UIObjectRuntimeProperties
+        {
+            uiObjectRuntime = Instantiate(uiObjectPrefab, parentTransform)
+        };
+        uiObjectRuntimeProperties.rectTransform
+            = uiObjectRuntimeProperties.uiObjectRuntime.gameObject.GetComponent<RectTransform>();
+        uiObjectRuntimeProperties.rectTransform.localPosition = uiObjectPosition;
+        FillUIObjectByInterface(parentComponent, uiTheme);
+        uiObjectRuntimeProperties.isFilled = true;
     }
 
     // Fill in UIObjects which implement an IUIObject interface.
-    private void InterfaceBasedFilling(UIComponent parentComponent, UITheme uiTheme) {
+    private void FillUIObjectByInterface(UIComponent parentComponent, UITheme uiTheme) {
         IUIObjectFillers.MaybeFillUIObjectSize(this);
-        IUIObjectFillers.MaybeFillUIObjectImageColor(this, uiTheme);
         IUIObjectFillers.MaybeFillUIObjectImage(this);
+        IUIObjectFillers.MaybeFillUIObjectImageColor(this, uiTheme);
         IUIObjectFillers.MaybeFillUIObjectTextChild(this, uiTheme);
         IUIObjectFillers.MaybeFillUIObjectButton(parentComponent, this);
         IUIObjectFillers.MaybeFillUIObjectImageChild(this);
     }
+}
 
-    // FILLERS - EXTENSIONS
-    // ----------------------------------------------------------------------------------------------
-    protected void MaybeFillUIObjectSize(Vector2 objectSize) {
-        rectTransform.sizeDelta = objectSize;
-    }
+public class UIObjectRuntimeProperties {
+    public bool isFilled = false;
+    public GameObject uiObjectRuntime;
+    public RectTransform rectTransform;
 }

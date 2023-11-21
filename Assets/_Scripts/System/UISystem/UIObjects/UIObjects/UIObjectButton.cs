@@ -4,7 +4,8 @@ using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "UIObjectButton", menuName = "UI System/UI Objects/UI Object Button")]
 public class UIObjectButton : UIObject,
-                              IUIObjectWithSize, IUIObjectWithImageColor,
+                              IUIObjectWithSize,
+                              IUIObjectWithImage, IUIObjectWithImageColor,
                               IUIObjectWithTextChild, IUIObjectWithClick {
 
     // INTERFACE - IUIObjectWithSize
@@ -12,6 +13,11 @@ public class UIObjectButton : UIObject,
     public Vector2 objectSize { get { return _objectSize; } }
 
     // INTERFACE - IUIObjectWithImage
+    [SerializeField] private Sprite _imageSprite;
+    public Sprite imageSprite { get { return _imageSprite; } }
+    public Image image { get; set; }
+
+    // INTERFACE - IUIObjectWithImageColor
     [SerializeField] private UIObjectImageColor _imageColor = UIObjectImageColor.UI_OBJECT_IMAGE_COLOR_NEUTRAL;
     public UIObjectImageColor imageColor { get { return _imageColor; } }
 

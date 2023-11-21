@@ -10,7 +10,7 @@ public enum UIObjectContainerLayoutDirection
     LAYOUT_DIRECTION_VERTICAL,
 }
 
-[CreateAssetMenu(fileName = "UIObjectContainer", menuName = "UI System/UI Objects/UI Object Container")]
+[CreateAssetMenu(fileName = "UIObjectContainer", menuName = "UI System/UI Objects/UI Containers/UI Object Container")]
 public class UIObjectContainer : UIObject
 {
     [SerializeField] private GameObject containerPrefab;
@@ -19,19 +19,20 @@ public class UIObjectContainer : UIObject
 
 
     public override void FillFromComponentManager(UIComponent parentComponent,
-                      Transform parentTransform,
-                      UITheme uiTheme,
-                      Vector2 uiObjectPosition)
+                                                  Transform parentTransform,
+                                                  UITheme uiTheme,
+                                                  Vector2 uiObjectPosition)
     {
         if (containerPrefab == null)
         {
             return;
         }
-        isFilled = false;
-        uiObjectRuntime = Instantiate(containerPrefab, parentTransform);
-        // Container-specific logic.
+        uiObjectRuntimeProperties = new UIObjectRuntimeProperties
+        {
+            uiObjectRuntime = Instantiate(containerPrefab, parentTransform)
+        };
         FillContainer(parentComponent, uiTheme, uiObjectPosition);
-        isFilled = true;
+        uiObjectRuntimeProperties.isFilled = true;
     }
 
     public void FillContainer(UIComponent parentComponent,
@@ -44,16 +45,15 @@ public class UIObjectContainer : UIObject
         }
         // The Content is located in ScrollView->Viewport->Content which is a nested GetComponent,
         // store reference to Content here.
-        Transform viewportTransform = uiObjectRuntime.transform.Find("Viewport");
+        Transform viewportTransform = uiObjectRuntimeProperties.uiObjectRuntime.transform.Find("Viewport");
         GameObject contentGameObject = viewportTransform.Find("Content").gameObject;
 
         float objectSpacing = uiTheme.UISpacingValueFromEnum(parentComponent.uiObjectSpacing);
         int objectMargin = (int)uiTheme.UIMarginValueFromEnum(parentComponent.uiObjectMargin);
-        FillScrollDirection();
 
         // Fill in container transform (including size).
-        rectTransform = uiObjectRuntime.GetComponent<RectTransform>();
-        rectTransform.localPosition = uiObjectPosition;
+        uiObjectRuntimeProperties.rectTransform = uiObjectRuntimeProperties.uiObjectRuntime.GetComponent<RectTransform>();
+        uiObjectRuntimeProperties.rectTransform.localPosition = uiObjectPosition;
         FillContainerSize(objectSpacing,objectMargin);
         // Fill in item spacing.
         HorizontalOrVerticalLayoutGroup layoutGroup = layoutDirection switch
@@ -64,6 +64,7 @@ public class UIObjectContainer : UIObject
             _ => contentGameObject.AddComponent<VerticalLayoutGroup>(),
         };
         FillLayoutGroup(layoutGroup, objectSpacing);
+        FillScrollDirection();
         // Fill in item margins.
         RectTransform viewportRectTransform = viewportTransform.gameObject.GetComponent<RectTransform>();
         viewportRectTransform.offsetMin = new Vector2(objectMargin, objectMargin);
@@ -76,9 +77,45 @@ public class UIObjectContainer : UIObject
         }
     }
 
+    public void FillContainerSize(float objectSpacing, int objectMargin) {
+        switch (layoutDirection) {
+            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_HORIZONTAL:
+                uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(2 * objectMargin + 2 * objectSpacing + 2.5f * items[0].objectSize.x,
+                                              2 * objectMargin + items[0].objectSize.y);
+                break;
+            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_VERTICAL:
+                uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(2 * objectMargin  + items[0].objectSize.x,
+                                                      2 * objectMargin + 2 * objectSpacing + 2.5f * items[0].objectSize.y);
+                break;
+            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_HORIZONTAL:
+                uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(2 * objectMargin + (items.Count-1) * objectSpacing
+                                                        + items.Count * items[0].objectSize.x,
+                                                      2 * objectMargin  + items[0].objectSize.y);
+                break;
+            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_VERTICAL:
+                uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(2 * objectMargin  + items[0].objectSize.x,
+                                                      2 * objectMargin + (items.Count-1) * objectSpacing
+                                                        + items.Count * items[0].objectSize.y);
+                break;
+        }
+    }
+
+    public void FillLayoutGroup(HorizontalOrVerticalLayoutGroup layoutGroup, float objectSpacing)
+    {
+        layoutGroup.spacing = objectSpacing;
+        layoutGroup.childAlignment = TextAnchor.MiddleCenter;
+        // Scale container by children.
+        layoutGroup.childScaleWidth = true;
+        layoutGroup.childScaleHeight = true;
+        layoutGroup.childForceExpandWidth = false;
+        layoutGroup.childForceExpandHeight = false;
+        layoutGroup.childControlWidth = false;
+        layoutGroup.childControlHeight = false;
+    }
+
     public void FillScrollDirection()
     {
-        ScrollRect scrollRect = uiObjectRuntime.gameObject.GetComponent<ScrollRect>();
+        ScrollRect scrollRect = uiObjectRuntimeProperties.uiObjectRuntime.gameObject.GetComponent<ScrollRect>();
         switch (layoutDirection)
         {
             case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_HORIZONTAL:
@@ -93,42 +130,4 @@ public class UIObjectContainer : UIObject
                 break;
         }
     }
-
-    public void FillContainerSize(float objectSpacing, int objectMargin) {
-        switch (layoutDirection) {
-            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_HORIZONTAL:
-                rectTransform.sizeDelta = new Vector2(2 * objectMargin + 2 * objectSpacing + 2.5f * items[0].objectSize.x,
-                                              2 * objectMargin + items[0].objectSize.y);
-                break;
-            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_VERTICAL:
-                rectTransform.sizeDelta = new Vector2(2 * objectMargin  + items[0].objectSize.x,
-                                                      2 * objectMargin + 2 * objectSpacing + 2.5f * items[0].objectSize.y);
-                break;
-            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_HORIZONTAL:
-                rectTransform.sizeDelta = new Vector2(2 * objectMargin + (items.Count-1) * objectSpacing
-                                                        + items.Count * items[0].objectSize.x,
-                                                      2 * objectMargin  + items[0].objectSize.y);
-                break;
-            case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_VERTICAL:
-                rectTransform.sizeDelta = new Vector2(2 * objectMargin  + items[0].objectSize.x,
-                                                      2 * objectMargin + (items.Count-1) * objectSpacing
-                                                        + items.Count * items[0].objectSize.y);
-                break;
-        }
-    }
-
-    public void FillLayoutGroup(HorizontalOrVerticalLayoutGroup layoutGroup, float objectSpacing)
-    {
-        layoutGroup.childAlignment = TextAnchor.MiddleCenter;
-        layoutGroup.childScaleWidth = true;
-        layoutGroup.childScaleHeight = true;
-        layoutGroup.childForceExpandWidth = false;
-        layoutGroup.childForceExpandHeight = false;
-        layoutGroup.childControlWidth = false;
-        layoutGroup.childControlHeight = false;
-        layoutGroup.spacing = objectSpacing;
-    }
 }
-
-// TODO: Create extension which contains description and title.
-

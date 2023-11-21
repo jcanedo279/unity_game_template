@@ -15,7 +15,8 @@ MonoBehaviour:
   uiObjectName: ButtonBack
   uiObjectPrefab: {fileID: 6704284020483082079, guid: 1af1db092c368d04b83328479b52699b, type: 3}
   _objectSize: {x: 320, y: 60}
+  _imageSprite: {fileID: 21300000, guid: 9667a293a5a078646b028c341ac5ced5, type: 3}
   _imageColor: 1
   _textContent: 
   _textColor: 0
-  _imageSprite: {fileID: 21300000, guid: 32be22225a813fa4c80288ea1406067f, type: 3}
+  _childImageSprite: {fileID: 21300000, guid: 32be22225a813fa4c80288ea1406067f, type: 3}

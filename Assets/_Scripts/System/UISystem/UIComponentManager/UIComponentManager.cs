@@ -57,13 +57,13 @@ public class UIComponentManager : MonoBehaviour {
     void DidReceiveUIComponentRequest(UIComponentRequest uiComponentRequest) {
         string uiComponentName = uiComponentRequest.uiComponentName;
         switch (uiComponentRequest.uiComponentRequestMode) {
-            case (UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_ENABLE):
+            case UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_ENABLE:
                 StartCoroutine(EnableUIComponent(uiComponentName));
                 break;
-            case (UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_DISABLE):
+            case UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_DISABLE:
                 StartCoroutine(DisableUIComponent(uiComponentName));
                 break;
-            case (UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_FLIP_ENABLE):
+            case UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_FLIP_ENABLE:
                 if (activeUIComponents.Contains(uiComponentName)) {
                     StartCoroutine(DisableUIComponent(uiComponentName));
                 } else {
@@ -78,7 +78,7 @@ public class UIComponentManager : MonoBehaviour {
             // A UI Component already exists with this name.
             yield break;
         } else if (!uiComponentNameToComponent.ContainsKey(uiComponentName)) {
-            UIComponentManager.PrintUIComponentNotRegisered(uiComponentName);
+            PrintUIComponentNotRegisered(uiComponentName);
            yield break;
         }
         if (!loadedUIComponents.Contains(uiComponentName)) {
@@ -124,7 +124,7 @@ public class UIComponentManager : MonoBehaviour {
             uiObject.FillFromComponentManager(uiComponent,uiComponent.uiComponentRuntime.transform,
                                               uiComponentManagerData.uiTheme,currentUIObjectPosition);
             currentUIObjectPosition -= new Vector2(0f,
-                                                   uiObjectSpacing+uiObject.rectTransform.rect.height);
+                                                   uiObjectSpacing+uiObject.uiObjectRuntimeProperties.rectTransform.rect.height);
         }
         yield return 0;
     }
