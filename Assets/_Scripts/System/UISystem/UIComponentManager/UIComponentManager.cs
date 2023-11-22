@@ -120,11 +120,15 @@ public class UIComponentManager : MonoBehaviour {
         float uiObjectSpacing = uiComponentManagerData.uiTheme.UISpacingValueFromEnum(uiComponent.uiObjectSpacing);
         Vector2 currentUIObjectPosition = new(uiComponent.startingUIObjectPosition.x,
                                                       uiComponent.startingUIObjectPosition.y);
+        uiComponent.uiObjectRuntimeProperties = new List<UIObjectRuntimeProperties>();
         foreach (UIObject uiObject in uiComponent.uiObjects) {
-            uiObject.FillFromComponentManager(uiComponent,uiComponent.uiComponentRuntime.transform,
-                                              uiComponentManagerData.uiTheme,currentUIObjectPosition);
+            UIObjectRuntimeProperties runtimeProperties = new UIObjectRuntimeProperties();
+            uiObject.FillFromComponentManager(runtimeProperties,
+                                              uiComponent, uiComponent.uiComponentRuntime.transform,
+                                              uiComponentManagerData.uiTheme, currentUIObjectPosition);
             currentUIObjectPosition -= new Vector2(0f,
-                                                   uiObjectSpacing+uiObject.uiObjectRuntimeProperties.rectTransform.rect.height);
+                                                   uiObjectSpacing+runtimeProperties.rectTransform.rect.height);
+            uiComponent.uiObjectRuntimeProperties.Add(runtimeProperties);
         }
         yield return 0;
     }

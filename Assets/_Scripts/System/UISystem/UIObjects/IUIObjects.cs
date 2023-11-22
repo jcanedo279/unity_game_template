@@ -3,119 +3,166 @@ using UnityEngine.UI;
 using TMPro;
 
 
-public interface IUIObjectWithSize {
+public class UIObjectRuntimeProperties
+{
+    public bool isFilled = false;
+    public GameObject uiObjectRuntime;
+    public RectTransform rectTransform;
+    public Image image { get; set; }
+    public Image childImage { get; set; }
+    public Button button { get; set; }
+}
+
+public interface IUIObjectWithSize
+{
     public Vector2 objectSize { get; }
 }
 
-public interface IUIObjectWithImageColor {
+public interface IUIObjectWithImageColor
+{
     public UIObjectImageColor imageColor { get; }
 }
 
-public interface IUIObjectWithImage {
+public interface IUIObjectWithImage
+{
     public Sprite imageSprite { get; }
-    public Image image { get; set; }
 }
 
-public interface IUIObjectWithImageChild {
+public interface IUIObjectWithImageChild
+{
     public Sprite childImageSprite { get; }
-    public Image childImage { get; set; }
 }
 
-public interface IUIObjectWithTextChild {
+public interface IUIObjectWithTextChild
+{
     public string textContent { get; }
     public UIObjectTextColor textColor { get; }
 }
 
-public interface IUIObjectWithButton {
-    public Button button { get; set; }
+public interface IUIObjectWithButton
+{
 }
 
-public interface IUIObjectWithClick : IUIObjectWithButton {
+public interface IUIObjectWithClick : IUIObjectWithButton
+{
     public System.Action<string> OnClickUIObjectDelegate { get; set; }
     public void OnClickUIObject();
 }
 
-public interface IUIObjectWithStringValueClick : IUIObjectWithButton {
-    public System.Action<string,string> OnValueClickUIObjectDelegate { get; set; }
+public interface IUIObjectWithStringValueClick : IUIObjectWithButton
+{
+    public System.Action<string, string> OnValueClickUIObjectDelegate { get; set; }
     public void OnClickUIObject();
 }
 
-public static class IUIObjectFillers {
-    public static void MaybeFillUIObjectSize(UIObject uiObject) {
-        if (uiObject is IUIObjectWithSize uiObjectWithSize) {
-            uiObject.uiObjectRuntimeProperties.rectTransform.sizeDelta = uiObjectWithSize.objectSize;
+public static class IUIObjectFillers
+{
+    public static void MaybeFillUIObjectSize(UIObjectRuntimeProperties uiObjectRuntimeProperties,
+                                             UIObject uiObject)
+    {
+        if (uiObject is IUIObjectWithSize uiObjectWithSize)
+        {
+            uiObjectRuntimeProperties.rectTransform.sizeDelta = uiObjectWithSize.objectSize;
         }
     }
 
-    public static void MaybeFillUIObjectImage(UIObject uiObject) {
-        if (uiObject is IUIObjectWithImage uiObjectWithImage) {
-            if (uiObjectWithImage.imageSprite == null) {
+    public static void MaybeFillUIObjectImage(UIObjectRuntimeProperties uiObjectRuntimeProperties,
+                                              UIObject uiObject)
+    {
+        if (uiObject is IUIObjectWithImage uiObjectWithImage)
+        {
+            if (uiObjectWithImage.imageSprite == null)
+            {
                 throw new System.ArgumentNullException($"UIObject: {uiObject.uiObjectName} does not have an imageSprite but implements IUIObjectWithImage.");
             }
-            uiObjectWithImage.image = uiObject.uiObjectRuntimeProperties.uiObjectRuntime.GetComponent<Image>();
-            uiObjectWithImage.image.sprite = uiObjectWithImage.imageSprite;
+            uiObjectRuntimeProperties.image = uiObjectRuntimeProperties.uiObjectRuntime.GetComponent<Image>();
+            uiObjectRuntimeProperties.image.sprite = uiObjectWithImage.imageSprite;
         }
     }
 
-    public static void MaybeFillUIObjectImageColor(UIObject uiObject, UITheme uiTheme) {
-        if (uiObject is IUIObjectWithImageColor uiObjectWithImageColor) {
+    public static void MaybeFillUIObjectImageColor(UIObjectRuntimeProperties uiObjectRuntimeProperties,
+                                                   UIObject uiObject,
+                                                   UITheme uiTheme)
+    {
+        if (uiObject is IUIObjectWithImageColor uiObjectWithImageColor)
+        {
             Image uiObjectImage;
-            if (uiObject is IUIObjectWithImage uiObjectWithImage) {
-                uiObjectImage = uiObjectWithImage.image;
-            } else {
-                uiObjectImage = uiObject.uiObjectRuntimeProperties.uiObjectRuntime.gameObject.GetComponent<Image>();
+            if (uiObject is IUIObjectWithImage)
+            {
+                uiObjectImage = uiObjectRuntimeProperties.image;
             }
-            if (uiObjectImage == null) {
+            else
+            {
+                uiObjectImage = uiObjectRuntimeProperties.uiObjectRuntime.gameObject.GetComponent<Image>();
+            }
+            if (uiObjectImage == null)
+            {
                 // No image found on GameObject, don't fill.
                 return;
             }
-            uiObjectImage.color = UIThemeUtil.ColorFromUIObjectImageColor(uiObjectWithImageColor.imageColor,uiTheme);
+            uiObjectImage.color = UIThemeUtil.ColorFromUIObjectImageColor(uiObjectWithImageColor.imageColor, uiTheme);
         }
     }
 
-    public static void MaybeFillUIObjectImageChild(UIObject uiObject) {
-        if (uiObject is IUIObjectWithImageChild uiObjectWithImageChild) {
-            if (uiObjectWithImageChild.childImageSprite == null) {
+    public static void MaybeFillUIObjectImageChild(UIObjectRuntimeProperties uiObjectRuntimeProperties,
+                                                   UIObject uiObject)
+    {
+        if (uiObject is IUIObjectWithImageChild uiObjectWithImageChild)
+        {
+            if (uiObjectWithImageChild.childImageSprite == null)
+            {
                 throw new System.ArgumentNullException($"UIObject: {uiObject.uiObjectName} does not have a childImageSprite but implements IUIObjectWithImageChild.");
             }
             GameObject iconObjectRuntime = new GameObject(uiObjectWithImageChild.childImageSprite.name);
-            iconObjectRuntime.transform.SetParent(uiObject.uiObjectRuntimeProperties.uiObjectRuntime.transform, false);
-            uiObjectWithImageChild.childImage = iconObjectRuntime.AddComponent<Image>();
-            uiObjectWithImageChild.childImage.sprite = uiObjectWithImageChild.childImageSprite;
+            iconObjectRuntime.transform.SetParent(uiObjectRuntimeProperties.uiObjectRuntime.transform, false);
+            uiObjectRuntimeProperties.childImage = iconObjectRuntime.AddComponent<Image>();
+            uiObjectRuntimeProperties.childImage.sprite = uiObjectWithImageChild.childImageSprite;
         }
     }
 
-    public static void MaybeFillUIObjectTextChild(UIObject uiObject, UITheme uiTheme) {
-        if (uiObject is IUIObjectWithTextChild uiObjectWithTextChild) {
-            if (uiTheme.font == null) {
+    public static void MaybeFillUIObjectTextChild(UIObjectRuntimeProperties uiObjectRuntimeProperties,
+                                                  UIObject uiObject,
+                                                  UITheme uiTheme)
+    {
+        if (uiObject is IUIObjectWithTextChild uiObjectWithTextChild)
+        {
+            if (uiTheme.font == null)
+            {
                 // No font detected in the theme, leave as the standard.
                 return;
             }
-            TMP_Text uiObjectText = uiObject.uiObjectRuntimeProperties.uiObjectRuntime.gameObject.GetComponentInChildren<TMP_Text>();
-            if (uiObjectText == null) {
+            TMP_Text uiObjectText = uiObjectRuntimeProperties.uiObjectRuntime.gameObject.GetComponentInChildren<TMP_Text>();
+            if (uiObjectText == null)
+            {
                 // No Text component found on GameObject, don't fill.
                 return;
             }
             uiObjectText.font = uiTheme.font;
             uiObjectText.text = uiObjectWithTextChild.textContent;
-            uiObjectText.color = UIThemeUtil.ColorFromUIObjectTextColor(uiObjectWithTextChild.textColor,uiTheme);
+            uiObjectText.color = UIThemeUtil.ColorFromUIObjectTextColor(uiObjectWithTextChild.textColor, uiTheme);
             uiObjectText.fontSize = 32f;
         }
     }
 
-    public static void MaybeFillUIObjectButton(UIComponent parentComponent, UIObject uiObject) {
-        if (uiObject is IUIObjectWithClick uiObjectWithClick && 
-                parentComponent.CanInterceptUIObjectWithClick()) {
+    public static void MaybeFillUIObjectButton(UIObjectRuntimeProperties uiObjectRuntimeProperties,
+                                               UIComponent parentComponent,
+                                               UIObject uiObject)
+    {
+        if (uiObject is IUIObjectWithClick uiObjectWithClick &&
+                parentComponent.CanInterceptUIObjectWithClick())
+        {
             uiObjectWithClick.OnClickUIObjectDelegate = parentComponent.OnClickUIObject;
-            uiObjectWithClick.button = uiObject.uiObjectRuntimeProperties.uiObjectRuntime.GetComponent<Button>();
-            uiObjectWithClick.button.onClick.AddListener(
-                delegate {uiObjectWithClick.OnClickUIObject();} );
-        } else if (uiObject is IUIObjectWithStringValueClick uiObjectWithStringValueClick &&
-                parentComponent.CanInterceptUIObjectWithClick()) {
+            uiObjectRuntimeProperties.button = uiObjectRuntimeProperties.uiObjectRuntime.GetComponent<Button>();
+            uiObjectRuntimeProperties.button.onClick.AddListener(
+                delegate { uiObjectWithClick.OnClickUIObject(); });
+        }
+        else if (uiObject is IUIObjectWithStringValueClick uiObjectWithStringValueClick &&
+                parentComponent.CanInterceptUIObjectWithClick())
+        {
             uiObjectWithStringValueClick.OnValueClickUIObjectDelegate = parentComponent.OnClickUIObject;
-            uiObjectWithStringValueClick.button = uiObject.uiObjectRuntimeProperties.uiObjectRuntime.GetComponent<Button>();
-            uiObjectWithStringValueClick.button.onClick.AddListener(
-                delegate {uiObjectWithStringValueClick.OnClickUIObject();} );
+            uiObjectRuntimeProperties.button = uiObjectRuntimeProperties.uiObjectRuntime.GetComponent<Button>();
+            uiObjectRuntimeProperties.button.onClick.AddListener(
+                delegate { uiObjectWithStringValueClick.OnClickUIObject(); });
         }
     }
 }

@@ -15,10 +15,12 @@ public class UIObjectContainer : UIObject
 {
     [SerializeField] private GameObject containerPrefab;
     [SerializeField] private List<UIObjectStringButton> items;
+    [SerializeField] private List<UIObjectRuntimeProperties> uiObjectRuntimePropertiesList;
     [SerializeField] private UIObjectContainerLayoutDirection layoutDirection;
 
 
-    public override void FillFromComponentManager(UIComponent parentComponent,
+    public override void FillFromComponentManager(UIObjectRuntimeProperties uiObjectRuntimeProperties,
+                                                  UIComponent parentComponent,
                                                   Transform parentTransform,
                                                   UITheme uiTheme,
                                                   Vector2 uiObjectPosition)
@@ -27,15 +29,13 @@ public class UIObjectContainer : UIObject
         {
             return;
         }
-        uiObjectRuntimeProperties = new UIObjectRuntimeProperties
-        {
-            uiObjectRuntime = Instantiate(containerPrefab, parentTransform)
-        };
-        FillContainer(parentComponent, uiTheme, uiObjectPosition);
+        uiObjectRuntimeProperties.uiObjectRuntime = Instantiate(containerPrefab, parentTransform);
+        FillContainer(uiObjectRuntimeProperties, parentComponent, uiTheme, uiObjectPosition);
         uiObjectRuntimeProperties.isFilled = true;
     }
 
-    public void FillContainer(UIComponent parentComponent,
+    public void FillContainer(UIObjectRuntimeProperties uiObjectRuntimeProperties,
+                              UIComponent parentComponent,
                               UITheme uiTheme,
                               Vector2 uiObjectPosition)
     {
@@ -54,7 +54,7 @@ public class UIObjectContainer : UIObject
         // Fill in container transform (including size).
         uiObjectRuntimeProperties.rectTransform = uiObjectRuntimeProperties.uiObjectRuntime.GetComponent<RectTransform>();
         uiObjectRuntimeProperties.rectTransform.localPosition = uiObjectPosition;
-        FillContainerSize(objectSpacing,objectMargin);
+        FillContainerSize(uiObjectRuntimeProperties, objectSpacing,objectMargin);
         // Fill in item spacing.
         HorizontalOrVerticalLayoutGroup layoutGroup = layoutDirection switch
         {
@@ -64,20 +64,26 @@ public class UIObjectContainer : UIObject
             _ => contentGameObject.AddComponent<VerticalLayoutGroup>(),
         };
         FillLayoutGroup(layoutGroup, objectSpacing);
-        FillScrollDirection();
+        FillScrollDirection(uiObjectRuntimeProperties);
         // Fill in item margins.
         RectTransform viewportRectTransform = viewportTransform.gameObject.GetComponent<RectTransform>();
         viewportRectTransform.offsetMin = new Vector2(objectMargin, objectMargin);
         viewportRectTransform.offsetMax = new Vector2(-objectMargin, -objectMargin);
 
         // Fill in each item.
+        uiObjectRuntimePropertiesList = new List<UIObjectRuntimeProperties>();
         foreach (UIObjectStringButton itemObject in items)
         {
-            itemObject.FillFromComponentManager(parentComponent, contentGameObject.transform, uiTheme, uiObjectPosition);
+            UIObjectRuntimeProperties itemUIObjectRuntimeProperties = new UIObjectRuntimeProperties();
+            itemObject.FillFromComponentManager(itemUIObjectRuntimeProperties,
+                                                parentComponent, contentGameObject.transform,
+                                                uiTheme, uiObjectPosition);
+            uiObjectRuntimePropertiesList.Add(itemUIObjectRuntimeProperties);
         }
     }
 
-    public void FillContainerSize(float objectSpacing, int objectMargin) {
+    public void FillContainerSize(UIObjectRuntimeProperties uiObjectRuntimeProperties,
+                                  float objectSpacing, int objectMargin) {
         switch (layoutDirection) {
             case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_HORIZONTAL:
                 uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(2 * objectMargin + 2 * objectSpacing + 2.5f * items[0].objectSize.x,
@@ -113,7 +119,7 @@ public class UIObjectContainer : UIObject
         layoutGroup.childControlHeight = false;
     }
 
-    public void FillScrollDirection()
+    public void FillScrollDirection(UIObjectRuntimeProperties uiObjectRuntimeProperties)
     {
         ScrollRect scrollRect = uiObjectRuntimeProperties.uiObjectRuntime.gameObject.GetComponent<ScrollRect>();
         switch (layoutDirection)
