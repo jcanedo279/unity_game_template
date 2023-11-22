@@ -6,11 +6,19 @@ using TMPro;
 public class UIObjectRuntimeProperties
 {
     public bool isFilled = false;
+    public string uiObjectValue;
     public GameObject uiObjectRuntime;
     public RectTransform rectTransform;
     public Image image { get; set; }
     public Image childImage { get; set; }
     public Button button { get; set; }
+    public GameObject contentGameObject; // Used by UIObjectContainer.
+
+    public void OnClickUIObjectRuntimeProperties(UIObject uiObject) {
+        if (uiObject is IUIObjectWithStringValueClick uiObjectWithStringValueClick) {
+            uiObjectWithStringValueClick.OnValueClickUIObjectDelegate(uiObject.uiObjectName, uiObjectValue);
+        }
+    }
 }
 
 public interface IUIObjectWithSize
@@ -162,7 +170,7 @@ public static class IUIObjectFillers
             uiObjectWithStringValueClick.OnValueClickUIObjectDelegate = parentComponent.OnClickUIObject;
             uiObjectRuntimeProperties.button = uiObjectRuntimeProperties.uiObjectRuntime.GetComponent<Button>();
             uiObjectRuntimeProperties.button.onClick.AddListener(
-                delegate { uiObjectWithStringValueClick.OnClickUIObject(); });
+                delegate { uiObjectRuntimeProperties.OnClickUIObjectRuntimeProperties(uiObject); });
         }
     }
 }

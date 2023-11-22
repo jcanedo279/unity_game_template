@@ -1,15 +1,20 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "UIObjectShelf", menuName = "UI System/UI Objects/UI Containers/UI Object Shelf")]
 public class UIObjectShelf : UIObject {
-    [SerializeField] public UIObjectImage uiObjectShelfTab;
-    [System.NonSerialized] private UIObjectRuntimeProperties uiObjectShelfRuntimeProperties;
+    [SerializeField] public UIObjectButton uiObjectTab;
     [SerializeField] public UIObjectContainer uiObjectContainer;
+    [System.NonSerialized] private UIObjectRuntimeProperties uiObjectShelfRuntimeProperties;
+    [System.NonSerialized] private UIObjectRuntimeProperties uiObjectDescriptionRuntimeProperties;
     [System.NonSerialized] private UIObjectRuntimeProperties uiObjectContainerRuntimeProperties;
+    [System.NonSerialized] private GameObject descriptionTextObject;
+    [SerializeField] private List<string> itemContentList;
     [SerializeField] private string descriptionContent = "Some description content.";
     [SerializeField] private UIObjectTextColor tabFontColor = UIObjectTextColor.UI_OBJECT_TEXT_COLOR_PRIMARY;
+    [SerializeField] private UIObjectTextColor descriptionFontColor = UIObjectTextColor.UI_OBJECT_TEXT_COLOR_PRIMARY;
 
     public override void FillFromComponentManager(UIObjectRuntimeProperties uiObjectRuntimeProperties,
                                                   UIComponent parentComponent,
@@ -17,25 +22,26 @@ public class UIObjectShelf : UIObject {
                                                   UITheme uiTheme,
                                                   Vector2 uiObjectPosition)
     {
-
         uiObjectRuntimeProperties.uiObjectRuntime = new GameObject(uiObjectName);
         uiObjectRuntimeProperties.uiObjectRuntime.transform.SetParent(parentTransform, false);
         uiObjectRuntimeProperties.rectTransform = uiObjectRuntimeProperties.uiObjectRuntime.AddComponent<RectTransform>();
         uiObjectRuntimeProperties.rectTransform.localPosition = uiObjectPosition;
 
-        uiObjectShelfRuntimeProperties = new UIObjectRuntimeProperties();
-        uiObjectShelfTab.FillFromComponentManager(uiObjectShelfRuntimeProperties,
-                                                  parentComponent,parentTransform,
-                                                  uiTheme,uiObjectPosition);
-        // uiObjectDescriptionTab.FillFromComponentManager(parentComponent,parentTransform,
-        //                                                 uiTheme,uiObjectPosition);
-
+        // Fill in Container.
         uiObjectContainerRuntimeProperties = new UIObjectRuntimeProperties();
+        uiObjectContainer.itemTextList = itemContentList;
         uiObjectContainer.FillFromComponentManager(uiObjectContainerRuntimeProperties,
                                                    parentComponent,parentTransform,
                                                    uiTheme,uiObjectPosition);
-        uiObjectShelfRuntimeProperties.rectTransform.sizeDelta = new Vector2(200f,70f);
-        // uiObjectDescriptionTab.rectTransform.sizeDelta = new Vector2(300f,70f);
+        Vector2 containerSize = uiObjectContainerRuntimeProperties.rectTransform.sizeDelta;
+
+        // Fill in Shelf tab.
+        uiObjectShelfRuntimeProperties = new UIObjectRuntimeProperties();
+        uiObjectTab.FillFromComponentManager(uiObjectShelfRuntimeProperties,
+                                                  parentComponent,parentTransform,
+                                                  uiTheme,uiObjectPosition);
+        uiObjectShelfRuntimeProperties.button.onClick.AddListener(OnClickShelfTab);
+        uiObjectShelfRuntimeProperties.rectTransform.sizeDelta = new Vector2(200f,50f);
         uiObjectShelfRuntimeProperties.rectTransform.localPosition =
             new Vector3(uiObjectContainerRuntimeProperties.rectTransform.localPosition.x,
                         uiObjectContainerRuntimeProperties.rectTransform.localPosition.y)
@@ -43,22 +49,54 @@ public class UIObjectShelf : UIObject {
                             +uiObjectShelfRuntimeProperties.rectTransform.sizeDelta.x/2f+(6*3f),
                           uiObjectContainerRuntimeProperties.rectTransform.sizeDelta.y/2f
                             +uiObjectShelfRuntimeProperties.rectTransform.sizeDelta.y/2f-(1*3f));
-        // uiObjectDescriptionTab.rectTransform.localPosition =
-        //     new Vector3(uiObjectShelfTab.rectTransform.localPosition.x,
-        //                 uiObjectShelfTab.rectTransform.localPosition.y)
-        //     + new Vector3(uiObjectShelfTab.rectTransform.sizeDelta.x/2f+uiObjectDescriptionTab.rectTransform.sizeDelta.x/2f,0f);
 
-        GameObject tabTextObject = new GameObject($"{uiObjectShelfTab.uiObjectName}/{uiObjectName}");
-        tabTextObject.transform.SetParent(uiObjectShelfRuntimeProperties.uiObjectRuntime.transform,false);
+        // Fill in Description tab.
+        uiObjectDescriptionRuntimeProperties = new UIObjectRuntimeProperties();
+        uiObjectTab.FillFromComponentManager(uiObjectDescriptionRuntimeProperties,
+                                                        parentComponent,parentTransform,
+                                                        uiTheme,uiObjectPosition);
+        uiObjectDescriptionRuntimeProperties.button.onClick.AddListener(OnClickDescriptionTab);
+        uiObjectDescriptionRuntimeProperties.rectTransform.sizeDelta = new Vector2(275f,50f);
+        uiObjectDescriptionRuntimeProperties.rectTransform.localPosition =
+            uiObjectShelfRuntimeProperties.rectTransform.localPosition
+            + new Vector3(uiObjectShelfRuntimeProperties.rectTransform.sizeDelta.x/2f
+                            +uiObjectDescriptionRuntimeProperties.rectTransform.sizeDelta.x/2f,0f);
 
-        // Fill in tab text.
-        TMP_Text tabTextComponent = tabTextObject.AddComponent<TextMeshProUGUI>();
-        tabTextComponent.text = uiObjectName;
-        tabTextComponent.font = uiTheme.font;
-        tabTextComponent.alignment = TextAlignmentOptions.Center;
-        tabTextComponent.color = UIThemeUtil.ColorFromUIObjectTextColor(tabFontColor,uiTheme);
-        tabTextComponent.fontSize = 32f;
+
+        // Fill in Shelf tab text.
+        GameObject shelfTabTextObject = new GameObject($"{uiObjectTab.uiObjectName}/{uiObjectName}");
+        shelfTabTextObject.transform.SetParent(uiObjectShelfRuntimeProperties.uiObjectRuntime.transform,false);
+        FillInText(shelfTabTextObject, uiTheme, uiObjectName, 32f);
+    
+        // Fill in Description tab text.
+        GameObject descriptionTabTextObject = new GameObject($"{uiObjectTab.uiObjectName}/DescriptionTab");
+        descriptionTabTextObject.transform.SetParent(uiObjectDescriptionRuntimeProperties.uiObjectRuntime.transform,false);
+        FillInText(descriptionTabTextObject, uiTheme, "Description", 32f);
+
+        // Fill in Description text.
+        descriptionTextObject = new GameObject($"{uiObjectTab.uiObjectName}/Description");
+        descriptionTextObject.transform.SetParent(uiObjectContainerRuntimeProperties.uiObjectRuntime.transform,false);
+        descriptionTextObject.SetActive(false);
+        FillInText(descriptionTextObject, uiTheme, $"{uiObjectName}: {descriptionContent}", 24f);
 
         uiObjectRuntimeProperties.isFilled = true;
+    }
+
+    void FillInText(GameObject objectWithText, UITheme uiTheme, string textContent, float fontSize) {
+        TMP_Text textComponent = objectWithText.AddComponent<TextMeshProUGUI>();
+        textComponent.text = textContent;
+        textComponent.font = uiTheme.font;
+        textComponent.alignment = TextAlignmentOptions.Center;
+        textComponent.color = UIThemeUtil.ColorFromUIObjectTextColor(descriptionFontColor,uiTheme);
+        textComponent.fontSize = fontSize;
+    }
+
+    void OnClickShelfTab() {
+        descriptionTextObject.SetActive(false);
+        uiObjectContainerRuntimeProperties.contentGameObject.SetActive(true);
+    }
+    void OnClickDescriptionTab() {
+        uiObjectContainerRuntimeProperties.contentGameObject.SetActive(false);
+        descriptionTextObject.SetActive(true);
     }
 }

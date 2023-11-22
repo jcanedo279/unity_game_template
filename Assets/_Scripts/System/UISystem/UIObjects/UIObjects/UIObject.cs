@@ -6,8 +6,6 @@ public class UIObject : ScriptableObject
 {
     public string uiObjectName;
     public GameObject uiObjectPrefab;
-    // Runtime properties.
-    // public UIObjectRuntimeProperties uiObjectRuntimeProperties;
 
 
     public virtual void FillFromComponentManager(

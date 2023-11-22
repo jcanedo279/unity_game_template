@@ -14,7 +14,8 @@ public enum UIObjectContainerLayoutDirection
 public class UIObjectContainer : UIObject
 {
     [SerializeField] private GameObject containerPrefab;
-    [SerializeField] private List<UIObjectStringButton> items;
+    [SerializeField] private UIObjectStringButton itemUIObject;
+    [SerializeField] public List<string> itemTextList;
     [SerializeField] private List<UIObjectRuntimeProperties> uiObjectRuntimePropertiesList;
     [SerializeField] private UIObjectContainerLayoutDirection layoutDirection;
 
@@ -39,14 +40,14 @@ public class UIObjectContainer : UIObject
                               UITheme uiTheme,
                               Vector2 uiObjectPosition)
     {
-        if (items == null)
+        if (itemUIObject == null || itemTextList == null)
         {
             return;
         }
         // The Content is located in ScrollView->Viewport->Content which is a nested GetComponent,
         // store reference to Content here.
         Transform viewportTransform = uiObjectRuntimeProperties.uiObjectRuntime.transform.Find("Viewport");
-        GameObject contentGameObject = viewportTransform.Find("Content").gameObject;
+        uiObjectRuntimeProperties.contentGameObject = viewportTransform.Find("Content").gameObject;
 
         float objectSpacing = uiTheme.UISpacingValueFromEnum(parentComponent.uiObjectSpacing);
         int objectMargin = (int)uiTheme.UIMarginValueFromEnum(parentComponent.uiObjectMargin);
@@ -60,8 +61,8 @@ public class UIObjectContainer : UIObject
         {
             UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_HORIZONTAL or
             UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_HORIZONTAL
-                => contentGameObject.AddComponent<HorizontalLayoutGroup>(),
-            _ => contentGameObject.AddComponent<VerticalLayoutGroup>(),
+                => uiObjectRuntimeProperties.contentGameObject.AddComponent<HorizontalLayoutGroup>(),
+            _ => uiObjectRuntimeProperties.contentGameObject.AddComponent<VerticalLayoutGroup>(),
         };
         FillLayoutGroup(layoutGroup, objectSpacing);
         FillScrollDirection(uiObjectRuntimeProperties);
@@ -72,36 +73,47 @@ public class UIObjectContainer : UIObject
 
         // Fill in each item.
         uiObjectRuntimePropertiesList = new List<UIObjectRuntimeProperties>();
-        foreach (UIObjectStringButton itemObject in items)
+        string originalItemTextContent = itemUIObject.textContent; // Cache original item textContent.
+        foreach (string itemText in itemTextList)
         {
-            UIObjectRuntimeProperties itemUIObjectRuntimeProperties = new UIObjectRuntimeProperties();
-            itemObject.FillFromComponentManager(itemUIObjectRuntimeProperties,
-                                                parentComponent, contentGameObject.transform,
-                                                uiTheme, uiObjectPosition);
+            UIObjectRuntimeProperties itemUIObjectRuntimeProperties = new UIObjectRuntimeProperties
+            {
+                uiObjectValue = itemText
+            };
+            itemUIObject.textContent = itemText;
+            itemUIObject.FillFromComponentManager(itemUIObjectRuntimeProperties,
+                                                  parentComponent, uiObjectRuntimeProperties.contentGameObject.transform,
+                                                  uiTheme, uiObjectPosition);
             uiObjectRuntimePropertiesList.Add(itemUIObjectRuntimeProperties);
         }
+        itemUIObject.textContent = originalItemTextContent;
     }
 
     public void FillContainerSize(UIObjectRuntimeProperties uiObjectRuntimeProperties,
                                   float objectSpacing, int objectMargin) {
+        Vector2 itemSize = itemUIObject.objectSize;
         switch (layoutDirection) {
             case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_HORIZONTAL:
-                uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(2 * objectMargin + 2 * objectSpacing + 2.5f * items[0].objectSize.x,
-                                              2 * objectMargin + items[0].objectSize.y);
+                uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(
+                    2 * objectMargin + 2 * objectSpacing + 2.5f * itemSize.x,
+                    2 * objectMargin + itemSize.y);
                 break;
             case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_VERTICAL:
-                uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(2 * objectMargin  + items[0].objectSize.x,
-                                                      2 * objectMargin + 2 * objectSpacing + 2.5f * items[0].objectSize.y);
+                uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(
+                    2 * objectMargin  + itemSize.x,
+                    2 * objectMargin + 2 * objectSpacing + 2.5f * itemSize.y);
                 break;
             case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_HORIZONTAL:
-                uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(2 * objectMargin + (items.Count-1) * objectSpacing
-                                                        + items.Count * items[0].objectSize.x,
-                                                      2 * objectMargin  + items[0].objectSize.y);
+                uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(
+                    2 * objectMargin + (itemTextList.Count-1) * objectSpacing
+                        + itemTextList.Count * itemSize.x,
+                    2 * objectMargin  + itemSize.y);
                 break;
             case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_VERTICAL:
-                uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(2 * objectMargin  + items[0].objectSize.x,
-                                                      2 * objectMargin + (items.Count-1) * objectSpacing
-                                                        + items.Count * items[0].objectSize.y);
+                uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(
+                    2 * objectMargin  + itemSize.x,
+                    2 * objectMargin + (itemTextList.Count-1) * objectSpacing
+                        + itemTextList.Count * itemSize.y);
                 break;
         }
     }

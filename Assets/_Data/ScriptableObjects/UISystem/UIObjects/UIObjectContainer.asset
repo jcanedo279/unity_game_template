@@ -14,12 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiObjectName: Container
   uiObjectPrefab: {fileID: 8359935323159147712, guid: 369c1cfda9200424d9ce59b2e017a9c8, type: 3}
-  uiObjectTextColor: 0
-  uiObjectImageColor: 0
-  shouldFillImage: 1
   containerPrefab: {fileID: 7915037921130720752, guid: afb96ec42813b6544aecbb2a21054aae, type: 3}
-  items:
-  - {fileID: 11400000, guid: 69da1c9f56890ac4a93dd74c5dc34d6f, type: 2}
-  - {fileID: 11400000, guid: 41eaeeb4f033004429bf68dc65cec746, type: 2}
-  - {fileID: 11400000, guid: ca3a4e57c7f9b09499c5e987298324f6, type: 2}
+  itemUIObject: {fileID: 11400000, guid: 69da1c9f56890ac4a93dd74c5dc34d6f, type: 2}
+  itemTextList: []
   layoutDirection: 0

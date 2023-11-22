@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4477b8f98f5c3c8418e0206e7de090e0, type: 3}
-  m_Name: UIObjectStringButton3
+  m_Script: {fileID: 11500000, guid: 98236180d26aa924f992a11aaa855ed7, type: 3}
+  m_Name: UIObjectTab
   m_EditorClassIdentifier: 
-  uiObjectName: ButtonStringValue3
+  uiObjectName: Tab
   uiObjectPrefab: {fileID: 6704284020483082079, guid: 1af1db092c368d04b83328479b52699b, type: 3}
   _objectSize: {x: 320, y: 60}
-  _imageSprite: {fileID: 21300000, guid: 9667a293a5a078646b028c341ac5ced5, type: 3}
-  _imageColor: 1
-  _textContent: StringValue3
+  _imageSprite: {fileID: 21300000, guid: 159299ff887eb384298b7ebedf9e12b4, type: 3}
+  _imageColor: 4
+  _textContent: 
   _textColor: 0
