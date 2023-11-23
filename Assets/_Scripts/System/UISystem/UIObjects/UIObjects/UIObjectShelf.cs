@@ -6,12 +6,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "UIObjectShelf", menuName = "UI System/UI Objects/UI Containers/UI Object Shelf")]
 public class UIObjectShelf : UIObject {
     [SerializeField] public UIObjectButton uiObjectTab;
+    [SerializeField] public float tabLength = 200f;
     [SerializeField] public UIObjectContainer uiObjectContainer;
     [System.NonSerialized] private UIObjectRuntimeProperties uiObjectShelfRuntimeProperties;
     [System.NonSerialized] private UIObjectRuntimeProperties uiObjectDescriptionRuntimeProperties;
     [System.NonSerialized] private UIObjectRuntimeProperties uiObjectContainerRuntimeProperties;
     [System.NonSerialized] private GameObject descriptionTextObject;
-    [SerializeField] private List<string> itemContentList;
+     [SerializeField] private List<string> itemContentList;
     [SerializeField] private string descriptionContent = "Some description content.";
     [SerializeField] private UIObjectTextColor tabFontColor = UIObjectTextColor.UI_OBJECT_TEXT_COLOR_PRIMARY;
     [SerializeField] private UIObjectTextColor descriptionFontColor = UIObjectTextColor.UI_OBJECT_TEXT_COLOR_PRIMARY;
@@ -41,7 +42,7 @@ public class UIObjectShelf : UIObject {
                                                   parentComponent,parentTransform,
                                                   uiTheme,uiObjectPosition);
         uiObjectShelfRuntimeProperties.button.onClick.AddListener(OnClickShelfTab);
-        uiObjectShelfRuntimeProperties.rectTransform.sizeDelta = new Vector2(200f,50f);
+        uiObjectShelfRuntimeProperties.rectTransform.sizeDelta = new Vector2(tabLength,50f);
         uiObjectShelfRuntimeProperties.rectTransform.localPosition =
             new Vector3(uiObjectContainerRuntimeProperties.rectTransform.localPosition.x,
                         uiObjectContainerRuntimeProperties.rectTransform.localPosition.y)
@@ -66,7 +67,7 @@ public class UIObjectShelf : UIObject {
         // Fill in Shelf tab text.
         GameObject shelfTabTextObject = new GameObject($"{uiObjectTab.uiObjectName}/{uiObjectName}");
         shelfTabTextObject.transform.SetParent(uiObjectShelfRuntimeProperties.uiObjectRuntime.transform,false);
-        FillInText(shelfTabTextObject, uiTheme, uiObjectName, 32f);
+        FillInText(shelfTabTextObject, uiTheme, uiObjectName, 32f, enableTextWrapping:false);
     
         // Fill in Description tab text.
         GameObject descriptionTabTextObject = new GameObject($"{uiObjectTab.uiObjectName}/DescriptionTab");
@@ -82,13 +83,17 @@ public class UIObjectShelf : UIObject {
         uiObjectRuntimeProperties.isFilled = true;
     }
 
-    void FillInText(GameObject objectWithText, UITheme uiTheme, string textContent, float fontSize) {
+    void FillInText(GameObject objectWithText, UITheme uiTheme, string textContent, float fontSize,
+                    bool enableTextWrapping=true) {
         TMP_Text textComponent = objectWithText.AddComponent<TextMeshProUGUI>();
         textComponent.text = textContent;
         textComponent.font = uiTheme.font;
         textComponent.alignment = TextAlignmentOptions.Center;
         textComponent.color = UIThemeUtil.ColorFromUIObjectTextColor(descriptionFontColor,uiTheme);
         textComponent.fontSize = fontSize;
+        if (enableTextWrapping == false) {
+            textComponent.enableWordWrapping = false;
+        }
     }
 
     void OnClickShelfTab() {

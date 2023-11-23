@@ -38,6 +38,6 @@ public class UIComponent : ScriptableObject {
             return;
         }
         onClickUIObjectEventChannel.RaiseEvent(
-            new UIObjectResponse(uiObjectName,uiObjectValue,uiComponentName));
+            new UIObjectResponse(uiObjectName,$"Shelf/{uiObjectValue}",uiComponentName));
     }
 }

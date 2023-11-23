@@ -60,7 +60,6 @@ public interface IUIObjectWithClick : IUIObjectWithButton
 public interface IUIObjectWithStringValueClick : IUIObjectWithButton
 {
     public System.Action<string, string> OnValueClickUIObjectDelegate { get; set; }
-    public void OnClickUIObject();
 }
 
 public static class IUIObjectFillers

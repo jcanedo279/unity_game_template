@@ -10,16 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b967b2a25558fe4c9a32217cf4abc08, type: 3}
-  m_Name: UIObjectShelf
+  m_Name: UIObjectAquariumShelf
   m_EditorClassIdentifier: 
-  uiObjectName: Shelf
+  uiObjectName: Purchase Aquarium
   uiObjectPrefab: {fileID: 8359935323159147712, guid: 369c1cfda9200424d9ce59b2e017a9c8, type: 3}
   uiObjectTab: {fileID: 11400000, guid: 2553f5d86a277744ba1f2bdfedea0201, type: 2}
+  tabLength: 350
   uiObjectContainer: {fileID: 11400000, guid: 91b01f10e23193641adc97d06beb27fd, type: 2}
   itemContentList:
-  - Room1
-  - Room2
-  - Room3
-  descriptionContent: Some description content.
+  - Aquarium 1
+  - Aquarium 2
+  - Aquarium 3
+  descriptionContent: 'Select an option to purchase an aquarium. '
   tabFontColor: 0
   descriptionFontColor: 0

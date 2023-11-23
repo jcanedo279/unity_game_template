@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2bf75de69573cf844b808fa008265a76, type: 3}
-  m_Name: UIComponentTest
+  m_Name: UIComponentAquariums
   m_EditorClassIdentifier: 
-  uiComponentName: UIComponentPurchaseRoom
+  uiComponentName: UIComponentPurchaseAquarium
   uiObjects:
   - {fileID: 11400000, guid: 76d584cbc09149043b99257c6877a499, type: 2}
   uiNestedComponentType: 1

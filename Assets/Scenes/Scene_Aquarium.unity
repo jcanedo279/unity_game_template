@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 970227505}
   - component: {fileID: 970227506}
+  - component: {fileID: 970227507}
   m_Layer: 0
   m_Name: AquariumManager
   m_TagString: Untagged
@@ -164,13 +165,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 970227504}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dee79fa12df7614db8cc5315ed8fc81, type: 3}
+  m_Script: {fileID: 11500000, guid: 0d95eed1dedc8c447a1cadcb1c1a8fbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomManagerData:
-    baseRoomSize: {x: 4, y: 4}
-    _rootObject: {fileID: 970227504}
-    _roomPrefab: {fileID: 8637748409784570158, guid: 9329755c8b5cb9347a5456ad3e0badf0, type: 3}
+  aquariumSprite: {fileID: 21300000, guid: bfa140c885d8bbb47aef785776cf2eba, type: 3}
+--- !u!114 &970227507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 970227504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be5d9b46a545450428752464b4617c27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _responseActivationMode: 0
+  _event: {fileID: 11400000, guid: 7851bebb604dfdc498225bd7bd4de2d1, type: 2}
+  _unityEventResponse:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1457513257
 GameObject:
   m_ObjectHideFlags: 0

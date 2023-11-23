@@ -30,7 +30,4 @@ public class UIObjectStringButton : UIObject,
     // INTERFACE - IUIObjectWithStringValueClick
     public Button button { get; set; }
     public System.Action<string,string> OnValueClickUIObjectDelegate { get; set; }
-    public void OnClickUIObject() {
-        OnValueClickUIObjectDelegate(uiObjectName, textContent);
-    }
 }
