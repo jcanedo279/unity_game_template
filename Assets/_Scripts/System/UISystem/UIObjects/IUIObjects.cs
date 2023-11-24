@@ -38,12 +38,12 @@ public interface IUIObjectWithImage
 
 public interface IUIObjectWithImageChild
 {
-    public Sprite childImageSprite { get; }
+    public Sprite childImageSprite { get; set; }
 }
 
 public interface IUIObjectWithTextChild
 {
-    public string textContent { get; }
+    public string textContent { get; set; }
     public UIObjectTextColor textColor { get; }
 }
 
@@ -59,6 +59,7 @@ public interface IUIObjectWithClick : IUIObjectWithButton
 
 public interface IUIObjectWithStringValueClick : IUIObjectWithButton
 {
+    public string uiObjectValue { get; }
     public System.Action<string, string> OnValueClickUIObjectDelegate { get; set; }
 }
 
@@ -164,7 +165,7 @@ public static class IUIObjectFillers
                 delegate { uiObjectWithClick.OnClickUIObject(); });
         }
         else if (uiObject is IUIObjectWithStringValueClick uiObjectWithStringValueClick &&
-                parentComponent.CanInterceptUIObjectWithClick())
+                    parentComponent.CanInterceptUIObjectWithClick())
         {
             uiObjectWithStringValueClick.OnValueClickUIObjectDelegate = parentComponent.OnClickUIObject;
             uiObjectRuntimeProperties.button = uiObjectRuntimeProperties.uiObjectRuntime.GetComponent<Button>();

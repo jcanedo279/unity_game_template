@@ -16,5 +16,9 @@ MonoBehaviour:
   uiObjectPrefab: {fileID: 8359935323159147712, guid: 369c1cfda9200424d9ce59b2e017a9c8, type: 3}
   containerPrefab: {fileID: 7915037921130720752, guid: afb96ec42813b6544aecbb2a21054aae, type: 3}
   itemUIObject: {fileID: 11400000, guid: 69da1c9f56890ac4a93dd74c5dc34d6f, type: 2}
-  itemTextList: []
+  itemObjectValues:
+  - Room 1
+  - Room 2
+  - Room 3
+  imageDataList: []
   layoutDirection: 0

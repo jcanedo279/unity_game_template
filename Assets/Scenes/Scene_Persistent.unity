@@ -159,7 +159,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.019607844, g: 0.007843138, b: 0.015686275, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -227,7 +227,6 @@ GameObject:
   - component: {fileID: 241427151}
   - component: {fileID: 241427153}
   - component: {fileID: 241427155}
-  - component: {fileID: 241427154}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -295,104 +294,6 @@ MonoBehaviour:
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
---- !u!114 &241427154
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 241427149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 39da56661ccfc234d983c42d8b61f523, type: 3}
-  m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: abbfd3b4-a02f-4aa9-8e7a-eef0b48f8a83
-    m_ActionName: Player/Move[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 9079391a-a201-46fb-ad1d-1a4bbbf60b36
-    m_ActionName: Player/Look[/Mouse/delta]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: ab919488-44a3-4da6-8b76-8ea62ca9838b
-    m_ActionName: Player/Fire[/Mouse/leftButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: b740a4f2-aff2-46bd-8097-a99d3e598801
-    m_ActionName: UI/Navigate[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: b82c865c-a0e5-465d-91e9-10bcdb173087
-    m_ActionName: UI/Submit[/Keyboard/enter]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 837440bf-0e9f-4166-a7d8-088a61ac4fe5
-    m_ActionName: UI/Cancel[/Keyboard/escape]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 8ed76e60-c86f-4b86-850d-a7d934c78d70
-    m_ActionName: UI/Point[/Mouse/position]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 12d9621d-9725-45ef-b037-0e4494aba5ed
-    m_ActionName: UI/Click[/Mouse/leftButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 7c8f5e44-d258-47a5-b895-55c505817241
-    m_ActionName: UI/ScrollWheel[/Mouse/scroll]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 57c3b1d2-4f9c-4539-96ae-cf23e6787d7f
-    m_ActionName: UI/MiddleClick[/Mouse/middleButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 1bd552f0-2c85-42ba-a7a6-85d90d459117
-    m_ActionName: UI/RightClick[/Mouse/rightButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 784b89f5-6211-4c95-b937-96ce230ede61
-    m_ActionName: UI/TrackedDevicePosition
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 3cc2182e-5522-4500-bf5d-bf87a1737885
-    m_ActionName: UI/TrackedDeviceOrientation
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 241427155}
-        m_TargetAssemblyTypeName: PlayerInputManager, Assembly-CSharp
-        m_MethodName: OnOpenUIRequest
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: dc0aae0c-da96-43c3-baea-568f42bbcec6
-    m_ActionName: Player/OpenUI[/Keyboard/space]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: Keyboard&Mouse
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &241427155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -405,7 +306,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ff7d33ce7efe8c41b5335392b3a55a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveAction: {fileID: 8792685917223605019, guid: 39da56661ccfc234d983c42d8b61f523, type: 3}
+  openUIAction: {fileID: -4958932311899936745, guid: 39da56661ccfc234d983c42d8b61f523, type: 3}
   uiComponentRequestEventChannel: {fileID: 11400000, guid: f5eb77a56d1a3e14b94dfe3ade1890bc, type: 2}
+  playerInputResponseEventChannel: {fileID: 11400000, guid: 96bdeb008bba84ccfbedd33e57a6d4de, type: 2}
 --- !u!1 &696898123
 GameObject:
   m_ObjectHideFlags: 0

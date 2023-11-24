@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bf75de69573cf844b808fa008265a76, type: 3}
+  m_Name: UIComponentPurchaseAquariumEdu
+  m_EditorClassIdentifier: 
+  uiComponentName: PurchaseAquariumEduComponent
+  uiObjects:
+  - {fileID: 11400000, guid: 629ebf6a697a948bba07a5c9baa3e9e5, type: 2}
+  uiNestedComponentType: 0
+  uiObjectSpacing: 1
+  uiObjectMargin: 0
+  startingUIObjectPosition: {x: 0, y: 0}
+  onClickUIObjectEventChannel: {fileID: 11400000, guid: 7851bebb604dfdc498225bd7bd4de2d1, type: 2}

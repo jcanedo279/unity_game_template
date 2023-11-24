@@ -4,11 +4,16 @@ using UnityEngine.UI;
 
 public class AquariumManager : MonoBehaviour {
     [SerializeField] private Sprite aquariumSprite;
+    [SerializeField] private PlayerController playerController; // This is required for 'rooting' the temporary nextAquarium.
+    [SerializeField] private UIComponentRequestEventChannel uiComponentRequestEventChannel;
     [System.NonSerialized] private UIObjectResponseEventChannelListener objectResponseEventChannelListener;
-    [System.NonSerialized] private GameObject nextAquarium;
+    [System.NonSerialized] private GameObject nextAquarium; 
 
     void Awake() {
         objectResponseEventChannelListener = GetComponent<UIObjectResponseEventChannelListener>();
+        if (uiComponentRequestEventChannel == null) {
+            throw new System.ArgumentNullException("The AquariumManager requires a UIComponentRequest channel.");
+        }
         if (objectResponseEventChannelListener == null) {
             throw new System.ArgumentNullException("The AquariumManager requires a UIObjectResponse listener.");
         }
@@ -16,10 +21,14 @@ public class AquariumManager : MonoBehaviour {
     }
 
     void OnUIObjectResponse(UIObjectResponse uiObjectResponse) {
-        if (uiObjectResponse.uiComponentName!="UIComponentPurchaseAquarium" || 
-            uiObjectResponse.uiObjectName!="Purchase Aquarium") {
+        if (uiObjectResponse.uiComponentName!="PurchaseAquariumComponent" || 
+            uiObjectResponse.uiObjectName!="PurchaseAquarium") {
                 return;
         }
+        uiComponentRequestEventChannel.RaiseEvent(new UIComponentRequest(uiObjectResponse.uiComponentName,
+                                                                         UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_DISABLE));
+        uiComponentRequestEventChannel.RaiseEvent(new UIComponentRequest("PurchaseAquariumEduComponent",
+                                                                         UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_ENABLE));
         SpriteRenderer nextAquariumSpriteRenderer = new SpriteRenderer();
         if (nextAquarium == null) {
             nextAquarium = new GameObject("NextAquarium");
@@ -29,7 +38,12 @@ public class AquariumManager : MonoBehaviour {
         if (nextAquariumSpriteRenderer == null) {
             nextAquariumSpriteRenderer = nextAquarium.GetComponent<SpriteRenderer>();
         }
-        nextAquariumSpriteRenderer.color = new Color(0f,0f,0f);
-        nextAquarium.transform.SetParent(transform, false);
+        nextAquariumSpriteRenderer.color = new Color(0.25f,0.25f,0.25f);
+        nextAquarium.transform.SetParent(playerController.transform, false);
+        nextAquarium.transform.localPosition = new Vector3(aquariumSprite.rect.size.x/(aquariumSprite.pixelsPerUnit*2f)
+                                                            +playerController.spriteRenderer.sprite.rect.size.x/(playerController.spriteRenderer.sprite.pixelsPerUnit*2f),
+                                                           aquariumSprite.rect.size.y/(aquariumSprite.pixelsPerUnit*2f)
+                                                            -playerController.spriteRenderer.sprite.rect.size.y/(playerController.spriteRenderer.sprite.pixelsPerUnit*2f),
+                                                           0f);
     }
 }

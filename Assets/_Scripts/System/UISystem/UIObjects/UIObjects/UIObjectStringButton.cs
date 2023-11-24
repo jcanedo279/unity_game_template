@@ -3,11 +3,7 @@ using UnityEngine.UI;
 
 
 [CreateAssetMenu(fileName = "UIObjectStringButton", menuName = "UI System/UI Objects/UI Object String Button")]
-public class UIObjectStringButton : UIObject,
-                                    IUIObjectWithSize,
-                                    IUIObjectWithImage, IUIObjectWithImageColor,
-                                    IUIObjectWithTextChild, IUIObjectWithStringValueClick {
-
+public class UIObjectStringButton : UIObject, IUIObjectWithContainerItem, IUIObjectWithTextChild {
     // INTERFACE - IUIObjectWithSize
     [SerializeField] private Vector2 _objectSize = new Vector2(320,60);
     public Vector2 objectSize { get { return _objectSize; } }
@@ -29,5 +25,6 @@ public class UIObjectStringButton : UIObject,
 
     // INTERFACE - IUIObjectWithStringValueClick
     public Button button { get; set; }
+    public string uiObjectValue { get { return _textContent; } }
     public System.Action<string,string> OnValueClickUIObjectDelegate { get; set; }
 }

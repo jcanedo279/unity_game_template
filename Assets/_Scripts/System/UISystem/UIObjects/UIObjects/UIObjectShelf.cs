@@ -30,7 +30,7 @@ public class UIObjectShelf : UIObject {
 
         // Fill in Container.
         uiObjectContainerRuntimeProperties = new UIObjectRuntimeProperties();
-        uiObjectContainer.itemTextList = itemContentList;
+        uiObjectContainer.itemObjectValues = itemContentList;
         uiObjectContainer.FillFromComponentManager(uiObjectContainerRuntimeProperties,
                                                    parentComponent,parentTransform,
                                                    uiTheme,uiObjectPosition);

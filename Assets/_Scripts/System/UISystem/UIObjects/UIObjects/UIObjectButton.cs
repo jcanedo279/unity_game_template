@@ -23,7 +23,7 @@ public class UIObjectButton : UIObject,
 
     // INTERFACE - IUIObjectWithTextChild
     [SerializeField] private string _textContent;
-    public string textContent { get { return _textContent; } }
+    public string textContent { get { return _textContent; } set { _textContent = value; } }
     [SerializeField] private UIObjectTextColor _textColor = UIObjectTextColor.UI_OBJECT_TEXT_COLOR_PRIMARY;
     public UIObjectTextColor textColor { get { return _textColor; } }
 
