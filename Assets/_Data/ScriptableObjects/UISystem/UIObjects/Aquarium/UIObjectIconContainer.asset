@@ -9,15 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc265b48e44a3d8489db2c95ced3668c, type: 3}
-  m_Name: UIObjectContainerPurchaseAquariumEdu
+  m_Script: {fileID: 11500000, guid: fabb8d4243f404a84a85c6d2aa3c4f45, type: 3}
+  m_Name: UIObjectIconContainer
   m_EditorClassIdentifier: 
   uiObjectName: PurchaseAquariumEdu
-  uiObjectPrefab: {fileID: 8359935323159147712, guid: 369c1cfda9200424d9ce59b2e017a9c8, type: 3}
+  uiObjectPrefab: {fileID: 6704284020483082079, guid: 1af1db092c368d04b83328479b52699b, type: 3}
   containerPrefab: {fileID: 7915037921130720752, guid: afb96ec42813b6544aecbb2a21054aae, type: 3}
   itemUIObject: {fileID: 11400000, guid: 6c562c4d1a57448fab454cd20f187445, type: 2}
-  itemObjectValues: []
-  imageDataList:
+  containerItemData:
   - sprite: {fileID: 21300000, guid: a96743fbd7c8d4e16a0650c6a71e5138, type: 3}
     uiObjectValue: CheckMark
   - sprite: {fileID: 21300000, guid: 126b02f65f8064bdc8b966cab2cd8503, type: 3}

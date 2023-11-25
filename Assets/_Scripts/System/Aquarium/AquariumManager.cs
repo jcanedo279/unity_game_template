@@ -7,7 +7,8 @@ public class AquariumManager : MonoBehaviour {
     [SerializeField] private PlayerController playerController; // This is required for 'rooting' the temporary nextAquarium.
     [SerializeField] private UIComponentRequestEventChannel uiComponentRequestEventChannel;
     [System.NonSerialized] private UIObjectResponseEventChannelListener objectResponseEventChannelListener;
-    [System.NonSerialized] private GameObject nextAquarium; 
+    [System.NonSerialized] private GameObject nextAquarium;
+    [System.NonSerialized] private SpriteRenderer nextAquariumSpriteRenderer;
 
     void Awake() {
         objectResponseEventChannelListener = GetComponent<UIObjectResponseEventChannelListener>();
@@ -21,23 +22,25 @@ public class AquariumManager : MonoBehaviour {
     }
 
     void OnUIObjectResponse(UIObjectResponse uiObjectResponse) {
-        if (uiObjectResponse.uiComponentName!="PurchaseAquariumComponent" || 
-            uiObjectResponse.uiObjectName!="PurchaseAquarium") {
-                return;
+        if (uiObjectResponse.uiComponentName=="PurchaseAquariumComponent" && uiObjectResponse.uiObjectName=="PurchaseAquarium") {
+            OnOpenPurchaseAquariumUI(uiObjectResponse);
         }
+        if (uiObjectResponse.uiComponentName=="PurchaseAquariumEduComponent" && uiObjectResponse.uiObjectValue=="Container/CheckMark") {
+            OnPurchaseAquarium();
+        }
+        if (uiObjectResponse.uiComponentName=="PurchaseAquariumEduComponent" && uiObjectResponse.uiObjectValue=="Container/Cross") {
+            OnCancelPurchaseAquarium();
+        }
+    }
+
+    void OnOpenPurchaseAquariumUI(UIObjectResponse uiObjectResponse) {
         uiComponentRequestEventChannel.RaiseEvent(new UIComponentRequest(uiObjectResponse.uiComponentName,
                                                                          UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_DISABLE));
         uiComponentRequestEventChannel.RaiseEvent(new UIComponentRequest("PurchaseAquariumEduComponent",
                                                                          UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_ENABLE));
-        SpriteRenderer nextAquariumSpriteRenderer = new SpriteRenderer();
-        if (nextAquarium == null) {
-            nextAquarium = new GameObject("NextAquarium");
-            nextAquariumSpriteRenderer = nextAquarium.AddComponent<SpriteRenderer>();
-            nextAquariumSpriteRenderer.sprite = aquariumSprite;
-        }
-        if (nextAquariumSpriteRenderer == null) {
-            nextAquariumSpriteRenderer = nextAquarium.GetComponent<SpriteRenderer>();
-        }
+        nextAquarium = new GameObject("NextAquarium");
+        nextAquariumSpriteRenderer = nextAquarium.AddComponent<SpriteRenderer>();
+        nextAquariumSpriteRenderer.sprite = aquariumSprite;
         nextAquariumSpriteRenderer.color = new Color(0.25f,0.25f,0.25f);
         nextAquarium.transform.SetParent(playerController.transform, false);
         nextAquarium.transform.localPosition = new Vector3(aquariumSprite.rect.size.x/(aquariumSprite.pixelsPerUnit*2f)
@@ -45,5 +48,17 @@ public class AquariumManager : MonoBehaviour {
                                                            aquariumSprite.rect.size.y/(aquariumSprite.pixelsPerUnit*2f)
                                                             -playerController.spriteRenderer.sprite.rect.size.y/(playerController.spriteRenderer.sprite.pixelsPerUnit*2f),
                                                            0f);
+    }
+
+    void OnPurchaseAquarium() {
+        uiComponentRequestEventChannel.RaiseEvent(new UIComponentRequest("PurchaseAquariumEduComponent",
+                                                                         UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_DISABLE));
+        nextAquarium.transform.SetParent(this.transform);
+        nextAquariumSpriteRenderer.color = new Color(1,1,1);
+    }
+    void OnCancelPurchaseAquarium() {
+        uiComponentRequestEventChannel.RaiseEvent(new UIComponentRequest("PurchaseAquariumEduComponent",
+                                                                         UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_DISABLE));
+        Destroy(nextAquarium);
     }
 }

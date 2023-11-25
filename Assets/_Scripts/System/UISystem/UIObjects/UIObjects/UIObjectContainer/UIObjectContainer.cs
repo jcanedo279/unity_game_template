@@ -29,14 +29,13 @@ public interface IUIObjectWithContainerItem : IUIObjectWithSize,
     public System.Action<string,string> OnValueClickUIObjectDelegate { get; set; }
 }
 
-[CreateAssetMenu(fileName = "UIObjectContainer", menuName = "UI System/UI Objects/UI Containers/UI Object Container")]
-public class UIObjectContainer : UIObject
+
+public abstract class UIObjectContainer<TContainerItem> : UIObject
 {
     [SerializeField] private GameObject containerPrefab;
-    [SerializeField] private UIObject itemUIObject;
-    [SerializeField] public List<string> itemObjectValues = new List<string>();
-    [SerializeField] public List<ItemWithImageChildData> imageDataList = new List<ItemWithImageChildData>();
-    [SerializeField] private List<UIObjectRuntimeProperties> uiObjectRuntimePropertiesList;
+    [SerializeField] protected UIObject itemUIObject;
+    [SerializeField] public List<TContainerItem> containerItemData = new List<TContainerItem>();
+    [SerializeField] protected List<UIObjectRuntimeProperties> uiObjectRuntimePropertiesList;
     [SerializeField] private UIObjectContainerLayoutDirection layoutDirection;
 
 
@@ -46,40 +45,23 @@ public class UIObjectContainer : UIObject
                                                   UITheme uiTheme,
                                                   Vector2 uiObjectPosition)
     {
-        if (containerPrefab == null)
-        {
-            return;
-        }
-        uiObjectRuntimeProperties.uiObjectRuntime = Instantiate(containerPrefab, parentTransform);
-        FillContainer(uiObjectRuntimeProperties, parentComponent, uiTheme, uiObjectPosition);
+        FillContainerBase(uiObjectRuntimeProperties, parentComponent, parentTransform, uiTheme, uiObjectPosition);
         uiObjectRuntimeProperties.isFilled = true;
-    }
-
-    public void FillContainer(UIObjectRuntimeProperties uiObjectRuntimeProperties,
-                              UIComponent parentComponent,
-                              UITheme uiTheme,
-                              Vector2 uiObjectPosition)
-    {
-        if (itemUIObject == null || itemObjectValues == null)
-        {
-            return;
-        }
-        if (!itemUIObject is IUIObjectWithContainerItem) {
-            throw new System.ArgumentException($"item UIObject: {itemUIObject.uiObjectName} does not implement IUIObjectWithContainerItem.");
-        }
-        FillContainerBase(uiObjectRuntimeProperties, parentComponent, uiTheme, uiObjectPosition);
-        // Fill in each item.
-        if (itemUIObject is UIObjectStringButton uiObjectStringButton) {
-            FillContainerStringButtonItems(uiObjectStringButton, uiObjectRuntimeProperties, parentComponent, uiTheme, uiObjectPosition);
-        } else if (itemUIObject is UIObjectIconButton uiObjectIconButton) {
-            FillContainerIconButtonItems(uiObjectIconButton, uiObjectRuntimeProperties, parentComponent, uiTheme, uiObjectPosition);
-        }
     }
 
     public void FillContainerBase(UIObjectRuntimeProperties uiObjectRuntimeProperties,
                                   UIComponent parentComponent,
+                                  Transform parentTransform,
                                   UITheme uiTheme,
                                   Vector2 uiObjectPosition) {
+        if (containerPrefab == null)
+        {
+            throw new System.ArgumentException($"Container UIObject: {uiObjectName} does not have a valid containerPrefab.");
+        }
+        uiObjectRuntimeProperties.uiObjectRuntime = Instantiate(containerPrefab, parentTransform);
+        if (itemUIObject == null || !itemUIObject is IUIObjectWithContainerItem) {
+            throw new System.ArgumentException($"Item UIObject: {itemUIObject.uiObjectName} does not implement IUIObjectWithContainerItem.");
+        }
         // The Content is located in ScrollView->Viewport->Content which is a nested GetComponent,
         // store reference to Content here.
         Transform viewportTransform = uiObjectRuntimeProperties.uiObjectRuntime.transform.Find("Viewport");
@@ -108,62 +90,15 @@ public class UIObjectContainer : UIObject
         viewportRectTransform.offsetMax = new Vector2(-objectMargin, -objectMargin);
     }
 
-    public void FillContainerStringButtonItems(UIObjectStringButton itemObject,
-                                                   UIObjectRuntimeProperties uiObjectRuntimeProperties,
-                                                   UIComponent parentComponent,
-                                                   UITheme uiTheme,
-                                                   Vector2 uiObjectPosition) {
-        // Fill in each item.
-        uiObjectRuntimePropertiesList = new List<UIObjectRuntimeProperties>();
-        foreach (string itemObjectValue in itemObjectValues)
-        {
-            UIObjectRuntimeProperties itemUIObjectRuntimeProperties = new UIObjectRuntimeProperties
-            {
-                uiObjectValue = $"Container/{itemObjectValue}"
-            };
-            itemObject.textContent = itemObjectValue;
-            itemObject.textContent = itemObjectValue;
-            itemUIObject.FillFromComponentManager(itemUIObjectRuntimeProperties,
-                                                  parentComponent, uiObjectRuntimeProperties.contentGameObject.transform,
-                                                  uiTheme, uiObjectPosition);
-            uiObjectRuntimePropertiesList.Add(itemUIObjectRuntimeProperties);
-        }
-    }
-
-    // Can we move this into the interface somehow?
-    [System.Serializable]
-    public class ItemWithImageChildData {
-        public Sprite sprite;
-        public string uiObjectValue;
-    }
-    public void FillContainerIconButtonItems(UIObjectIconButton itemObject,
-                                             UIObjectRuntimeProperties uiObjectRuntimeProperties,
-                                             UIComponent parentComponent,
-                                             UITheme uiTheme,
-                                             Vector2 uiObjectPosition) {
-        // Fill in each item.
-        uiObjectRuntimePropertiesList = new List<UIObjectRuntimeProperties>();
-        foreach (ItemWithImageChildData itemImageData in imageDataList)
-        {
-            UIObjectRuntimeProperties itemUIObjectRuntimeProperties = new UIObjectRuntimeProperties
-            {
-                uiObjectValue = $"Container/{itemImageData.uiObjectValue}"
-            };
-            itemObject.childImageSprite = itemImageData.sprite;
-            itemObject.FillFromComponentManager(itemUIObjectRuntimeProperties,
-                                                parentComponent, uiObjectRuntimeProperties.contentGameObject.transform,
-                                                uiTheme, uiObjectPosition);
-            uiObjectRuntimePropertiesList.Add(itemUIObjectRuntimeProperties);
-        }
-    }
-
     public void FillContainerSize(UIObjectRuntimeProperties uiObjectRuntimeProperties,
                                   float objectSpacing, int objectMargin) {
         Vector2 itemSize = Vector2.zero;
         if (itemUIObject is IUIObjectWithContainerItem uiObjectWithContainerData) {
             itemSize = uiObjectWithContainerData.objectSize;
+        } else {
+            return;
         }
-        int numberItems = itemObjectValues.Count + imageDataList.Count;
+        int numberItems = containerItemData.Count;
         switch (layoutDirection) {
             case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_HORIZONTAL:
                 uiObjectRuntimeProperties.rectTransform.sizeDelta = new Vector2(

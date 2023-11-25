@@ -7,7 +7,7 @@ using UnityEngine;
 public class UIObjectShelf : UIObject {
     [SerializeField] public UIObjectButton uiObjectTab;
     [SerializeField] public float tabLength = 200f;
-    [SerializeField] public UIObjectContainer uiObjectContainer;
+    [SerializeField] public UIObjectStringButtonContainer uiObjectContainer;
     [System.NonSerialized] private UIObjectRuntimeProperties uiObjectShelfRuntimeProperties;
     [System.NonSerialized] private UIObjectRuntimeProperties uiObjectDescriptionRuntimeProperties;
     [System.NonSerialized] private UIObjectRuntimeProperties uiObjectContainerRuntimeProperties;
@@ -30,7 +30,7 @@ public class UIObjectShelf : UIObject {
 
         // Fill in Container.
         uiObjectContainerRuntimeProperties = new UIObjectRuntimeProperties();
-        uiObjectContainer.itemObjectValues = itemContentList;
+        uiObjectContainer.containerItemData = itemContentList;
         uiObjectContainer.FillFromComponentManager(uiObjectContainerRuntimeProperties,
                                                    parentComponent,parentTransform,
                                                    uiTheme,uiObjectPosition);

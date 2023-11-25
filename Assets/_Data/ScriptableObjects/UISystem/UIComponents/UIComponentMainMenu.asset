@@ -16,7 +16,6 @@ MonoBehaviour:
   uiObjects:
   - {fileID: 11400000, guid: 1313015d97c7a6e48ac415f11a6df6d5, type: 2}
   - {fileID: 11400000, guid: 5421e090829a35a4597eeab4ecd850d5, type: 2}
-  - {fileID: 11400000, guid: 69da1c9f56890ac4a93dd74c5dc34d6f, type: 2}
   uiNestedComponentType: 1
   uiObjectSpacing: 0
   uiObjectMargin: 0

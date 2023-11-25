@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour {
     private Vector3 movementVector;
     private float maxSpeed = 5f;
     private PlayerAnimationState currentAnimationState;
+    [SerializeField] PlayerData playerData;
 
     public enum PlayerAnimationState {
         PlayerAnimationState_Idle,
@@ -29,6 +30,7 @@ public class PlayerController : MonoBehaviour {
         currentAnimationState = PlayerAnimationState.PlayerAnimationState_Idle;
         rigidBody = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        playerData.playerTransform = transform;
 
         playerMoveEventChannelListener = GetComponent<PlayerInputResponseEventChannelListener>();
         playerMoveEventChannelListener.UnityEventResponse += OnPlayerInputResponseEvent;

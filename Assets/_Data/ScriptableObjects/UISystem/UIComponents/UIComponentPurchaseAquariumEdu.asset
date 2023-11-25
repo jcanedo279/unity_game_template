@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiComponentName: PurchaseAquariumEduComponent
   uiObjects:
-  - {fileID: 11400000, guid: 629ebf6a697a948bba07a5c9baa3e9e5, type: 2}
+  - {fileID: 11400000, guid: 7b888ba85600c465b808f1b462ae1b69, type: 2}
   uiNestedComponentType: 0
   uiObjectSpacing: 1
   uiObjectMargin: 0
-  startingUIObjectPosition: {x: 0, y: 0}
+  startingUIObjectPosition: {x: -365, y: 100}
   onClickUIObjectEventChannel: {fileID: 11400000, guid: 7851bebb604dfdc498225bd7bd4de2d1, type: 2}
