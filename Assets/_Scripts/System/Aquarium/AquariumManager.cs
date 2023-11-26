@@ -67,16 +67,24 @@ public class AquariumManager : MonoBehaviour {
                 // We can no longer place aquarium.
                 uiObjectRequestEventChannel.RaiseEvent(new UIObjectRequest(
                     new UIObjectRuntimePropertiesId {
-                        uiComponentName="PurchaseAquariumEduComponent",uiObjectName="PurchaseAquariumEdu",uiObjectValue="CheckMark"},
+                        uiComponentName="PurchaseAquariumEduComponent",uiObjectName="Confirmation",uiObjectValue="CheckMark"},
                     UIObjectRequest.UIObjectRequestMode.REQUEST_MODE_DISABLE));
+                uiObjectRequestEventChannel.RaiseEvent(new UIObjectRequest(
+                    new UIObjectRuntimePropertiesId {
+                        uiComponentName="PurchaseAquariumEduComponent",uiObjectName="PurchaseAquariumEdu",uiObjectValue=""},
+                    UIObjectRequest.UIObjectRequestMode.REQUEST_MODE_RENDER));
                 nextAquariumSpriteRenderer.color = new Color(0,0,0);
                 canPlace = false;
             } else if (!canPlace && hitColliders.Length == 0) {
                 // We can now place aquarium.
                 uiObjectRequestEventChannel.RaiseEvent(new UIObjectRequest(
                     new UIObjectRuntimePropertiesId {
-                        uiComponentName="PurchaseAquariumEduComponent",uiObjectName="PurchaseAquariumEdu",uiObjectValue="CheckMark"},
+                        uiComponentName="PurchaseAquariumEduComponent",uiObjectName="Confirmation",uiObjectValue="CheckMark"},
                     UIObjectRequest.UIObjectRequestMode.REQUEST_MODE_ENABLE));
+                uiObjectRequestEventChannel.RaiseEvent(new UIObjectRequest(
+                    new UIObjectRuntimePropertiesId {
+                        uiComponentName="PurchaseAquariumEduComponent",uiObjectName="PurchaseAquariumEdu",uiObjectValue=""},
+                    UIObjectRequest.UIObjectRequestMode.REQUEST_MODE_RENDER));
                 nextAquariumSpriteRenderer.color = new Color(0.25f,0.25f,0.25f);
                 canPlace = true;
             }

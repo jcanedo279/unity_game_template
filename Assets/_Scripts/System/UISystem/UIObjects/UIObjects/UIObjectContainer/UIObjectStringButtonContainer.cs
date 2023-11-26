@@ -44,6 +44,7 @@ public class UIObjectStringButtonContainer : UIObjectContainer<string>
                     textContent = itemTextData
                 }
             };
+            uiObjectRuntimeProperties.containerProperties.itemRuntimePropertiesList = uiObjectRuntimePropertiesList;
             itemObject.FillFromComponentManager(itemUIObjectRuntimeProperties,
                                                 parentComponent, uiObjectRuntimeProperties.containerProperties.contentGameObject.transform,
                                                 uiTheme, uiObjectPosition);

@@ -28,6 +28,14 @@ public class UIObject : ScriptableObject
         return new Dictionary<string, UIObjectRuntimeProperties>();
     }
 
+    public virtual void RenderFromComponentManager(
+        UIObjectRuntimeProperties uiObjectRuntimeProperties,
+        UIComponent parentComponent,
+        UITheme uiTheme)
+    {
+        // No-op... for now :>
+    }
+
     // Fill in UIObjects which implement an IUIObject interface.
     private void FillUIObjectByInterface(UIObjectRuntimeProperties uiObjectRuntimeProperties,
                                          UIComponent parentComponent,

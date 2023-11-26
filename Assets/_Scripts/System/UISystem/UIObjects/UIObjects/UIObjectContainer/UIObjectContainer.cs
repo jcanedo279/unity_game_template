@@ -36,6 +36,15 @@ public abstract class UIObjectContainer<TContainerItem> : UIObject
         return new Dictionary<string, UIObjectRuntimeProperties>();
     }
 
+    public override void RenderFromComponentManager(
+        UIObjectRuntimeProperties uiObjectRuntimeProperties,
+        UIComponent parentComponent,
+        UITheme uiTheme)
+    {
+        FillContainerSize(uiObjectRuntimeProperties,parentComponent,uiTheme);
+        base.RenderFromComponentManager(uiObjectRuntimeProperties,parentComponent,uiTheme);
+    }
+
     public void FillContainerBase(UIObjectRuntimeProperties uiObjectRuntimeProperties,
                                   UIComponent parentComponent,
                                   Transform parentTransform,
@@ -46,16 +55,19 @@ public abstract class UIObjectContainer<TContainerItem> : UIObject
             throw new ArgumentException($"Container UIObject: {uiObjectName} does not have a valid containerPrefab.");
         }
         uiObjectRuntimeProperties.uiObjectRuntime = Instantiate(containerPrefab, parentTransform);
-        if (itemUIObject == null) {
-            throw new ArgumentException($"Item UIObject: {itemUIObject.uiObjectName} does not implement IUIObjectWithContainerItem.");
-        }
+        uiObjectRuntimeProperties.RenderFromComponentManager = RenderFromComponentManager;
         // The Content is located in ScrollView->Viewport->Content which is a nested GetComponent,
         // store reference to Content here.
         Transform viewportTransform = uiObjectRuntimeProperties.uiObjectRuntime.transform.Find("Viewport");
         uiObjectRuntimeProperties.containerProperties = new UIObjectRuntimeProperties.IUIObjectWithContainerProperties {
-            contentGameObject = viewportTransform.Find("Content").gameObject
+            contentGameObject = viewportTransform.Find("Content").gameObject,
+            layoutDirection = layoutDirection,
         };
-
+        if (itemUIObject is IUIObjectWithContainerItem uiObjectWithContainerData) {
+            uiObjectRuntimeProperties.containerProperties.itemSize = uiObjectWithContainerData.objectSize;
+        } else {
+            throw new ArgumentException($"Item UIObject: {itemUIObject.uiObjectName} does not implement IUIObjectWithContainerItem.");
+        }
         float objectSpacing = uiTheme.UISpacingValueFromEnum(parentComponent.uiObjectSpacing);
         int objectMargin = (int)uiTheme.UIMarginValueFromEnum(parentComponent.uiObjectMargin);
 
@@ -77,20 +89,16 @@ public abstract class UIObjectContainer<TContainerItem> : UIObject
         viewportRectTransform.offsetMin = new Vector2(objectMargin, objectMargin);
         viewportRectTransform.offsetMax = new Vector2(-objectMargin, -objectMargin);
     }
-
+    
     public void FillContainerSize(UIObjectRuntimeProperties uiObjectRuntimeProperties,
                                   UIComponent parentComponent, UITheme uiTheme) {
         float objectSpacing = uiTheme.UISpacingValueFromEnum(parentComponent.uiObjectSpacing);
         int objectMargin = (int)uiTheme.UIMarginValueFromEnum(parentComponent.uiObjectMargin);
-        Vector2 itemSize;
-        if (itemUIObject is IUIObjectWithContainerItem uiObjectWithContainerData) {
-            itemSize = uiObjectWithContainerData.objectSize;
-        } else {
-            return;
-        }
+        Vector2 itemSize = uiObjectRuntimeProperties.containerProperties.itemSize;
+        UIObjectContainerLayoutDirection layoutDirection = uiObjectRuntimeProperties.containerProperties.layoutDirection;
         int numberItems = 0;
-        foreach (UIObjectRuntimeProperties properties in uiObjectRuntimePropertiesList) {
-            numberItems += Convert.ToInt32(properties.uiObjectRuntime.gameObject.activeSelf);
+        foreach (UIObjectRuntimeProperties itemProperties in uiObjectRuntimeProperties.containerProperties.itemRuntimePropertiesList) {
+            numberItems += Convert.ToInt32(itemProperties.uiObjectRuntime.gameObject.activeSelf);
         }
         switch (layoutDirection) {
             case UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_HORIZONTAL:

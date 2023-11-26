@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 // PROPERTIES
 // ---------------------------------------------------------------------------------------------------------------
@@ -18,6 +19,7 @@ public class UIObjectRuntimeProperties
     public UIObjectRuntimePropertiesId propertyId;
     public GameObject uiObjectRuntime;
     public RectTransform rectTransform;
+    public System.Action<UIObjectRuntimeProperties,UIComponent,UITheme> RenderFromComponentManager;
 
     // INTERFACE - IUIObjectWithSize
     public IUIObjectWithSize.IUIObjectWithSizeProperties sizeProperties;
@@ -46,6 +48,9 @@ public class UIObjectRuntimeProperties
     // INTERFACE - IUIObjectWithContainer
     public class IUIObjectWithContainerProperties {
         public GameObject contentGameObject { get; set; }
+        public Vector2 itemSize { get; set; }
+        public List<UIObjectRuntimeProperties> itemRuntimePropertiesList { get; set; }
+        public UIObjectContainerLayoutDirection layoutDirection { get; set; }
     }
     public IUIObjectWithContainerProperties containerProperties;
 }

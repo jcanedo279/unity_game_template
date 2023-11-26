@@ -50,6 +50,7 @@ public class UIObjectIconContainer : UIObjectContainer<ItemWithImageChildData>
                     childImageSprite = itemData.sprite
                 }
             };
+            uiObjectRuntimeProperties.containerProperties.itemRuntimePropertiesList = uiObjectRuntimePropertiesList;
             itemObject.FillFromComponentManager(itemUIObjectRuntimeProperties,
                                                 parentComponent, uiObjectRuntimeProperties.containerProperties.contentGameObject.transform,
                                                 uiTheme, uiObjectPosition);

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 
 public class UIComponentManager : MonoBehaviour {
@@ -89,9 +90,25 @@ public class UIComponentManager : MonoBehaviour {
             case UIObjectRequest.UIObjectRequestMode.REQUEST_MODE_DISABLE:
                 StartCoroutine(EnableUIComponentObject(propertyId,false));
                 break;
-            // case UIObjectRequest.UIObjectRequestMode.REQUEST_MODE_RENDER:
-            // We are trying to do stuff here :<
+            case UIObjectRequest.UIObjectRequestMode.REQUEST_MODE_RENDER:
+                StartCoroutine(RenderUIObject(propertyId));
+                break;
         }
+    }
+
+    protected IEnumerator RenderUIObject(UIObjectRuntimePropertiesId propertiesId) {
+        string uiComponentName = propertiesId.uiComponentName;
+        if (!activeUIComponents.Contains(uiComponentName)) {
+            // We should not re-render a non-active component (yet).
+            yield break;
+        }
+        UIComponent parentComponent = uiComponentNameToComponent[uiComponentName];
+        if (!loadedObjectPropertyIdToObjectRuntimeProperties.ContainsKey(propertiesId.Id)) {
+            Debug.Log($"The propertyId: {propertiesId.Id} is not currently loaded but is trying to render.");
+        }
+        UIObjectRuntimeProperties runtimeProperties = loadedObjectPropertyIdToObjectRuntimeProperties[propertiesId.Id];
+        runtimeProperties.RenderFromComponentManager(runtimeProperties,parentComponent,uiComponentManagerData.uiTheme);
+        yield break;
     }
 
     protected IEnumerator EnableUIComponent(string uiComponentName) {
@@ -124,9 +141,10 @@ public class UIComponentManager : MonoBehaviour {
     protected IEnumerator EnableUIComponentObject(UIObjectRuntimePropertiesId propertyId, bool isEnabled) {
         if (!loadedObjectPropertyIdToObjectRuntimeProperties.ContainsKey(propertyId.Id)) {
             string enablementString = isEnabled ? "enable" : "disable";
-            Debug.Log($"The UIComponent: {propertyId.uiComponentName} is registered but is trying to {enablementString} a not active/loaded object: {propertyId.uiObjectName}. The loaded object Ids are:");
+            Debug.Log($"The Object with propertyId: {propertyId.Id} is registered but is trying to {enablementString} a not active/loaded object: {propertyId.uiObjectName}.");
             // Print all the loaded Object Ids for debugging.
-            Debug.Log(loadedObjectPropertyIdToObjectRuntimeProperties.Keys.Aggregate((a, b) => a + ", " + b));
+            string registeredObjects = string.Join(", ", loadedObjectPropertyIdToObjectRuntimeProperties.Keys.ToList());
+            Debug.Log($"The loaded object Ids are: {registeredObjects}.");
             yield break;
         }
         loadedObjectPropertyIdToObjectRuntimeProperties[propertyId.Id].uiObjectRuntime.SetActive(isEnabled);
