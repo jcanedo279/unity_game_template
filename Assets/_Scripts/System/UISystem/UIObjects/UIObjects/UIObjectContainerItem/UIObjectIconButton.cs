@@ -10,8 +10,7 @@ public class UIObjectIconButton : UIObject, IUIObjectWithContainerItem, IUIObjec
 
     // INTERFACE - IUIObjectWithImage
     [SerializeField] private Sprite _imageSprite;
-    public Sprite imageSprite { get { return _imageSprite; } }
-    public Image image { get; set; }
+    public Sprite imageSprite { get { return _imageSprite; } set { _imageSprite = value; } }
 
     // INTERFACE - IUIObjectWithImageColor
     [SerializeField] private UIObjectImageColor _imageColor = UIObjectImageColor.UI_OBJECT_IMAGE_COLOR_NEUTRAL;
@@ -20,11 +19,8 @@ public class UIObjectIconButton : UIObject, IUIObjectWithContainerItem, IUIObjec
     // INTERFACE - IUIObjectWithImageChild
     [SerializeField] private Sprite _childImageSprite;
     public Sprite childImageSprite { get { return _childImageSprite; } set { _childImageSprite = value; } }
-    public Image childImage { get; set; }
 
     // INTERFACE - IUIObjectWithStringValueClick
-    public Button button { get; set; }
     [SerializeField] private string _uiObjectValue;
-    public string uiObjectValue { get { return _uiObjectValue; } }
-    public System.Action<string,string> OnValueClickUIObjectDelegate { get; set; }
+    public string uiObjectValue { get { return _uiObjectValue; } set { _uiObjectValue = value; } }
 }

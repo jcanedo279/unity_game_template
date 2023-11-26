@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ece96d70f5a3b864483ae1a2b9bb26c7, type: 3}
   m_Name: UIObjectIconButtonConfirmation
   m_EditorClassIdentifier: 
-  uiObjectName: Confirmation
-  uiObjectPrefab: {fileID: 6704284020483082079, guid: 1af1db092c368d04b83328479b52699b, type: 3}
+  _uiObjectName: Confirmation
+  _uiObjectPrefab: {fileID: 6704284020483082079, guid: 1af1db092c368d04b83328479b52699b, type: 3}
   _objectSize: {x: 115, y: 115}
   _imageSprite: {fileID: 21300000, guid: 9667a293a5a078646b028c341ac5ced5, type: 3}
   _imageColor: 1

@@ -230,7 +230,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerData: {fileID: 11400000, guid: 3d0b64ca0fc6a49a9a00c8f3fc1573e0, type: 2}
   worldData: {fileID: 11400000, guid: e869990f2b9f84a0cabbf30496131bd7, type: 2}
-  mapBounds: {fileID: 0}
   smoothSpeed: 0.5
 --- !u!1 &241427149
 GameObject:
@@ -609,6 +608,7 @@ GameObject:
   - component: {fileID: 735178759}
   - component: {fileID: 735178762}
   - component: {fileID: 735178761}
+  - component: {fileID: 735178763}
   m_Layer: 0
   m_Name: UISelfDrivenStateManager
   m_TagString: Untagged
@@ -676,6 +676,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _responseActivationMode: 0
   _event: {fileID: 11400000, guid: 7851bebb604dfdc498225bd7bd4de2d1, type: 2}
+  _unityEventResponse:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &735178763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 735178757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8c0ebed2a97f408994b9f19abbe84a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _responseActivationMode: 0
+  _event: {fileID: 11400000, guid: 909acfccabeb446cf9b36a6219c239be, type: 2}
   _unityEventResponse:
     m_PersistentCalls:
       m_Calls: []

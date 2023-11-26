@@ -1,23 +1,28 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Linq;
 
 
 [CreateAssetMenu(fileName = "UIObjectStringButtonContainer", menuName = "UI System/UI Objects/UI Containers/UI Object StringButton Container")]
 public class UIObjectStringButtonContainer : UIObjectContainer<string>
 {
-    public override void FillFromComponentManager(UIObjectRuntimeProperties uiObjectRuntimeProperties,
-                                                  UIComponent parentComponent,
-                                                  Transform parentTransform,
-                                                  UITheme uiTheme,
-                                                  Vector2 uiObjectPosition)
+    public override Dictionary<string,UIObjectRuntimeProperties> FillFromComponentManager(
+        UIObjectRuntimeProperties uiObjectRuntimeProperties,
+        UIComponent parentComponent,
+        Transform parentTransform,
+        UITheme uiTheme,
+        Vector2 uiObjectPosition)
     {
         FillContainerBase(uiObjectRuntimeProperties, parentComponent, parentTransform, uiTheme, uiObjectPosition);
         if (itemUIObject is UIObjectStringButton uiObjectStringButton) {
             FillContainerStringButtonItems(uiObjectStringButton,uiObjectRuntimeProperties,parentComponent,uiTheme,uiObjectPosition);
         }
+        FillContainerSize(uiObjectRuntimeProperties, parentComponent, uiTheme);
         uiObjectRuntimeProperties.isFilled = true;
+        return uiObjectRuntimePropertiesList.ToDictionary(runtimeProperties => runtimeProperties.propertyId.Id, runtimeProperties => runtimeProperties);
     }
+
     public void FillContainerStringButtonItems(UIObjectStringButton itemObject,
                                              UIObjectRuntimeProperties uiObjectRuntimeProperties,
                                              UIComponent parentComponent,
@@ -29,11 +34,18 @@ public class UIObjectStringButtonContainer : UIObjectContainer<string>
         {
             UIObjectRuntimeProperties itemUIObjectRuntimeProperties = new UIObjectRuntimeProperties
             {
-                uiObjectValue = $"Container/{itemTextData}"
+                propertyId = new UIObjectRuntimePropertiesId {
+                    uiComponentName=parentComponent.uiComponentName, uiObjectName=itemObject.uiObjectName, uiObjectValue=itemTextData
+                },
+                stringValueClickProperties = new IUIObjectWithStringValueClick.IUIObjectWithStringValueClickProperties {
+                    uiObjectValue = $"Container/{itemTextData}"
+                },
+                textChildProperties = new IUIObjectWithTextChild.IUIObjectWithTextChildProperties {
+                    textContent = itemTextData
+                }
             };
-            itemObject.textContent = itemTextData;
             itemObject.FillFromComponentManager(itemUIObjectRuntimeProperties,
-                                                parentComponent, uiObjectRuntimeProperties.contentGameObject.transform,
+                                                parentComponent, uiObjectRuntimeProperties.containerProperties.contentGameObject.transform,
                                                 uiTheme, uiObjectPosition);
             uiObjectRuntimePropertiesList.Add(itemUIObjectRuntimeProperties);
         }

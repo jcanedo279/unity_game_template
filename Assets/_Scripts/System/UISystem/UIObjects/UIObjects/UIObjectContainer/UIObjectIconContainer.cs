@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Linq;
 
 
 // Can we move this into the interface somehow?
@@ -13,17 +14,20 @@ public class ItemWithImageChildData {
 [CreateAssetMenu(fileName = "UIObjectIconContainer", menuName = "UI System/UI Objects/UI Containers/UI Object Icon Container")]
 public class UIObjectIconContainer : UIObjectContainer<ItemWithImageChildData>
 {
-    public override void FillFromComponentManager(UIObjectRuntimeProperties uiObjectRuntimeProperties,
-                                                  UIComponent parentComponent,
-                                                  Transform parentTransform,
-                                                  UITheme uiTheme,
-                                                  Vector2 uiObjectPosition)
+    public override Dictionary<string,UIObjectRuntimeProperties> FillFromComponentManager(
+        UIObjectRuntimeProperties uiObjectRuntimeProperties,
+        UIComponent parentComponent,
+        Transform parentTransform,
+        UITheme uiTheme,
+        Vector2 uiObjectPosition)
     {
         FillContainerBase(uiObjectRuntimeProperties, parentComponent, parentTransform, uiTheme, uiObjectPosition);
         if (itemUIObject is UIObjectIconButton uiObjectIconButton) {
             FillContainerIconButtonItems(uiObjectIconButton,uiObjectRuntimeProperties,parentComponent,uiTheme,uiObjectPosition);
         }
+        FillContainerSize(uiObjectRuntimeProperties, parentComponent, uiTheme);
         uiObjectRuntimeProperties.isFilled = true;
+        return uiObjectRuntimePropertiesList.ToDictionary(runtimeProperties => runtimeProperties.propertyId.Id, runtimeProperties => runtimeProperties);
     }
     public void FillContainerIconButtonItems(UIObjectIconButton itemObject,
                                              UIObjectRuntimeProperties uiObjectRuntimeProperties,
@@ -36,11 +40,18 @@ public class UIObjectIconContainer : UIObjectContainer<ItemWithImageChildData>
         {
             UIObjectRuntimeProperties itemUIObjectRuntimeProperties = new UIObjectRuntimeProperties
             {
-                uiObjectValue = $"Container/{itemData.uiObjectValue}"
+                propertyId = new UIObjectRuntimePropertiesId {
+                    uiComponentName=parentComponent.uiComponentName, uiObjectName=itemObject.uiObjectName, uiObjectValue=itemData.uiObjectValue
+                },
+                stringValueClickProperties = new IUIObjectWithStringValueClick.IUIObjectWithStringValueClickProperties {
+                    uiObjectValue = $"Container/{itemData.uiObjectValue}"
+                },
+                imageChildProperties = new IUIObjectWithImageChild.IUIObjectWithImageChildProperties {
+                    childImageSprite = itemData.sprite
+                }
             };
-            itemObject.childImageSprite = itemData.sprite;
             itemObject.FillFromComponentManager(itemUIObjectRuntimeProperties,
-                                                parentComponent, uiObjectRuntimeProperties.contentGameObject.transform,
+                                                parentComponent, uiObjectRuntimeProperties.containerProperties.contentGameObject.transform,
                                                 uiTheme, uiObjectPosition);
             uiObjectRuntimePropertiesList.Add(itemUIObjectRuntimeProperties);
         }

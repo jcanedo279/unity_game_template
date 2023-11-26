@@ -20,3 +20,27 @@ public class UIComponentRequest {
         this.uiComponentRequestMode = uiComponentRequestMode;
     }
 }
+
+public class UIObjectRequest {
+    public enum UIObjectRequestMode {
+        REQUEST_MODE_ENABLE,
+        REQUEST_MODE_DISABLE,
+        REQUEST_MODE_RENDER,
+    }
+
+    private UIObjectRuntimePropertiesId _propertyId;
+    public UIObjectRuntimePropertiesId propertyId { get => _propertyId; private set {
+        _propertyId = value;
+    }}
+
+    private UIObjectRequestMode _uiObjectRequestMode;
+    public UIObjectRequestMode uiObjectRequestMode { get => _uiObjectRequestMode; private set {
+        _uiObjectRequestMode = value;
+    }}
+
+    public UIObjectRequest(UIObjectRuntimePropertiesId propertyId,
+                           UIObjectRequestMode uiObjectRequestMode) {
+        this.propertyId = propertyId;
+        this.uiObjectRequestMode = uiObjectRequestMode;
+    }
+}

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 
 public class UIComponentManager : MonoBehaviour {
@@ -8,11 +9,14 @@ public class UIComponentManager : MonoBehaviour {
     public UIComponentManagerData uiComponentManagerData;
     // Components which are interpreted.
     protected Dictionary<string,UIComponent> uiComponentNameToComponent;
+    // Objects which are loaded.
+    protected Dictionary<string,UIObjectRuntimeProperties> loadedObjectPropertyIdToObjectRuntimeProperties;
     // Components which are currently displayed.
     protected HashSet<string> activeUIComponents;
     // Components who are loaded in the globalCanvas.
     private HashSet<string> loadedUIComponents;
     protected UIComponentRequestEventChannelListener uiComponentRequestEventChannelListener;
+    protected UIObjectRequestEventChannelListener uiObjectRequestEventChannelListener;
     protected System.Action<UIComponentRequest> onActiveUIComponentsChange;
 
     protected virtual void Awake() {
@@ -31,14 +35,17 @@ public class UIComponentManager : MonoBehaviour {
             return;
         }
         uiComponentNameToComponent = new Dictionary<string,UIComponent>();
+        loadedObjectPropertyIdToObjectRuntimeProperties = new Dictionary<string, UIObjectRuntimeProperties>();
         activeUIComponents = new HashSet<string>();
         loadedUIComponents = new HashSet<string>();
         uiComponentRequestEventChannelListener = GetComponent<UIComponentRequestEventChannelListener>();
-        if (uiComponentRequestEventChannelListener == null) {
-            Debug.Log("No UI ComponentRequest EventChannel Listener attached, please attach one to listen to component requests.");
+        uiObjectRequestEventChannelListener = GetComponent<UIObjectRequestEventChannelListener>();
+        if (uiComponentRequestEventChannelListener == null || uiObjectRequestEventChannelListener == null) {
+            Debug.Log("No UI ComponentRequest or ObjectRequest EventChannel Listener(s) attached, please attach these to listen to requests.");
             return;
         }
         uiComponentRequestEventChannelListener.UnityEventResponse += DidReceiveUIComponentRequest;
+        uiObjectRequestEventChannelListener.UnityEventResponse += DidReceiveUIObjectRequest;
         RegisterUIComponents();
     }
 
@@ -73,6 +80,20 @@ public class UIComponentManager : MonoBehaviour {
         }
     }
 
+    void DidReceiveUIObjectRequest(UIObjectRequest uiComponentRequest) {
+        UIObjectRuntimePropertiesId propertyId = uiComponentRequest.propertyId;
+        switch (uiComponentRequest.uiObjectRequestMode) {
+            case UIObjectRequest.UIObjectRequestMode.REQUEST_MODE_ENABLE:
+                StartCoroutine(EnableUIComponentObject(propertyId,true));
+                break;
+            case UIObjectRequest.UIObjectRequestMode.REQUEST_MODE_DISABLE:
+                StartCoroutine(EnableUIComponentObject(propertyId,false));
+                break;
+            // case UIObjectRequest.UIObjectRequestMode.REQUEST_MODE_RENDER:
+            // We are trying to do stuff here :<
+        }
+    }
+
     protected IEnumerator EnableUIComponent(string uiComponentName) {
         if (activeUIComponents.Contains(uiComponentName)) {
             // A UI Component already exists with this name.
@@ -100,6 +121,18 @@ public class UIComponentManager : MonoBehaviour {
             new UIComponentRequest(uiComponentName,UIComponentRequest.UIComponentRequestMode.REQUEST_MODE_DISABLE));
     }
 
+    protected IEnumerator EnableUIComponentObject(UIObjectRuntimePropertiesId propertyId, bool isEnabled) {
+        if (!loadedObjectPropertyIdToObjectRuntimeProperties.ContainsKey(propertyId.Id)) {
+            string enablementString = isEnabled ? "enable" : "disable";
+            Debug.Log($"The UIComponent: {propertyId.uiComponentName} is registered but is trying to {enablementString} a not active/loaded object: {propertyId.uiObjectName}. The loaded object Ids are:");
+            // Print all the loaded Object Ids for debugging.
+            Debug.Log(loadedObjectPropertyIdToObjectRuntimeProperties.Keys.Aggregate((a, b) => a + ", " + b));
+            yield break;
+        }
+        loadedObjectPropertyIdToObjectRuntimeProperties[propertyId.Id].uiObjectRuntime.SetActive(isEnabled);
+        yield break;
+    }
+
     protected void SetUIComponentActive(string uiComponentName, bool isActive) {
         uiComponentNameToComponent[uiComponentName].uiComponentRuntime.SetActive(isActive);
         if (isActive) {
@@ -120,15 +153,20 @@ public class UIComponentManager : MonoBehaviour {
         float uiObjectSpacing = uiComponentManagerData.uiTheme.UISpacingValueFromEnum(uiComponent.uiObjectSpacing);
         Vector2 currentUIObjectPosition = new(uiComponent.startingUIObjectPosition.x,
                                                       uiComponent.startingUIObjectPosition.y);
-        uiComponent.uiObjectRuntimeProperties = new List<UIObjectRuntimeProperties>();
         foreach (UIObject uiObject in uiComponent.uiObjects) {
-            UIObjectRuntimeProperties runtimeProperties = new UIObjectRuntimeProperties();
+            UIObjectRuntimeProperties runtimeProperties = new UIObjectRuntimeProperties {
+                propertyId = new UIObjectRuntimePropertiesId {
+                    uiComponentName=uiComponentName,
+                    uiObjectName=uiObject.uiObjectName
+                }
+            };
             uiObject.FillFromComponentManager(runtimeProperties,
                                               uiComponent, uiComponent.uiComponentRuntime.transform,
-                                              uiComponentManagerData.uiTheme, currentUIObjectPosition);
+                                              uiComponentManagerData.uiTheme, currentUIObjectPosition)
+                    .ToList().ForEach(propertyMap => loadedObjectPropertyIdToObjectRuntimeProperties[propertyMap.Key] = propertyMap.Value);
+            loadedObjectPropertyIdToObjectRuntimeProperties.Add(runtimeProperties.propertyId.Id, runtimeProperties);
             currentUIObjectPosition -= new Vector2(0f,
                                                    uiObjectSpacing+runtimeProperties.rectTransform.rect.height);
-            uiComponent.uiObjectRuntimeProperties.Add(runtimeProperties);
         }
         yield return 0;
     }

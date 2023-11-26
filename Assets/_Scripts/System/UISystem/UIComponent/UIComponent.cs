@@ -9,7 +9,6 @@ public class UIComponent : ScriptableObject {
     [SerializeField] public List<UIObject> uiObjects;
     [SerializeField] public UINestedComponentType uiNestedComponentType;
     [System.NonSerialized] public GameObject uiComponentRuntime;
-    [System.NonSerialized] public List<UIObjectRuntimeProperties> uiObjectRuntimeProperties;
     public UISpacing uiObjectSpacing = UISpacing.UI_SPACING_DEFAULT;
     public UIMargin uiObjectMargin = UIMargin.UI_MARGIN_DEFAULT;
     public Vector2 startingUIObjectPosition = new Vector2(0f,0f);

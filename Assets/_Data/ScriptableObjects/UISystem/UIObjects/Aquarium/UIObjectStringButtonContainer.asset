@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a9583df46d17426aa319f5635645cfc, type: 3}
   m_Name: UIObjectStringButtonContainer
   m_EditorClassIdentifier: 
-  uiObjectName: PurchaseAquariumContainer
-  uiObjectPrefab: {fileID: 8359935323159147712, guid: 369c1cfda9200424d9ce59b2e017a9c8, type: 3}
+  _uiObjectName: PurchaseAquariumComponent
+  _uiObjectPrefab: {fileID: 8359935323159147712, guid: 369c1cfda9200424d9ce59b2e017a9c8, type: 3}
   containerPrefab: {fileID: 7915037921130720752, guid: afb96ec42813b6544aecbb2a21054aae, type: 3}
   itemUIObject: {fileID: 11400000, guid: 69da1c9f56890ac4a93dd74c5dc34d6f, type: 2}
-  containerItemData: []
+  containerItemData:
+  - Aquarium 1
+  - Aquarium 2
+  - Aquarium 3
   layoutDirection: 0

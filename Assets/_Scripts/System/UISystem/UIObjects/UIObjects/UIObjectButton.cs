@@ -14,8 +14,7 @@ public class UIObjectButton : UIObject,
 
     // INTERFACE - IUIObjectWithImage
     [SerializeField] private Sprite _imageSprite;
-    public Sprite imageSprite { get { return _imageSprite; } }
-    public Image image { get; set; }
+    public Sprite imageSprite { get { return _imageSprite; } set { _imageSprite = value; } }
 
     // INTERFACE - IUIObjectWithImageColor
     [SerializeField] private UIObjectImageColor _imageColor = UIObjectImageColor.UI_OBJECT_IMAGE_COLOR_NEUTRAL;
@@ -28,9 +27,4 @@ public class UIObjectButton : UIObject,
     public UIObjectTextColor textColor { get { return _textColor; } }
 
     // INTERFACE - IUIObjectWithClick
-    public Button button { get; set; }
-    public System.Action<string> OnClickUIObjectDelegate { get; set; }
-    public void OnClickUIObject() {
-        OnClickUIObjectDelegate?.Invoke(uiObjectName);
-    }
 }

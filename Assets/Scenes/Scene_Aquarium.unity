@@ -263,7 +263,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.0018390286, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -473,9 +473,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d95eed1dedc8c447a1cadcb1c1a8fbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aquariumSprite: {fileID: 21300000, guid: fe07e18bead164d8c869f84e63bb988d, type: 3}
+  aquariumSprite: {fileID: 21300000, guid: bfa140c885d8bbb47aef785776cf2eba, type: 3}
   playerController: {fileID: 438866189}
   uiComponentRequestEventChannel: {fileID: 11400000, guid: f5eb77a56d1a3e14b94dfe3ade1890bc, type: 2}
+  uiObjectRequestEventChannel: {fileID: 11400000, guid: 909acfccabeb446cf9b36a6219c239be, type: 2}
 --- !u!114 &970227507
 MonoBehaviour:
   m_ObjectHideFlags: 0

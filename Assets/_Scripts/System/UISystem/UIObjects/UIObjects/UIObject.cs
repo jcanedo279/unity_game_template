@@ -1,20 +1,23 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "UIObject", menuName = "UI System/UI Objects/UI Object")]
 public class UIObject : ScriptableObject
 {
-    public string uiObjectName;
-    public GameObject uiObjectPrefab;
+    [SerializeField] string _uiObjectName;
+    public string uiObjectName { get { return _uiObjectName; } }
+    [SerializeField] GameObject _uiObjectPrefab;
+    GameObject uiObjectPrefab { get { return _uiObjectPrefab; } }
 
 
-    public virtual void FillFromComponentManager(
-                      UIObjectRuntimeProperties uiObjectRuntimeProperties,
-                      UIComponent parentComponent,
-                      // This may be different than parentComponent if we are filling from a UIObject Container.
-                      Transform parentTransform,
-                      UITheme uiTheme,
-                      Vector2 uiObjectPosition)
+    public virtual Dictionary<string,UIObjectRuntimeProperties> FillFromComponentManager(
+        UIObjectRuntimeProperties uiObjectRuntimeProperties,
+        UIComponent parentComponent,
+        // This may be different than parentComponent if we are filling from a UIObject Container.
+        Transform parentTransform,
+        UITheme uiTheme,
+        Vector2 uiObjectPosition)
     {
         uiObjectRuntimeProperties.uiObjectRuntime = Instantiate(uiObjectPrefab, parentTransform);
         uiObjectRuntimeProperties.rectTransform
@@ -22,6 +25,7 @@ public class UIObject : ScriptableObject
         uiObjectRuntimeProperties.rectTransform.localPosition = uiObjectPosition;
         FillUIObjectByInterface(uiObjectRuntimeProperties, parentComponent, uiTheme);
         uiObjectRuntimeProperties.isFilled = true;
+        return new Dictionary<string, UIObjectRuntimeProperties>();
     }
 
     // Fill in UIObjects which implement an IUIObject interface.

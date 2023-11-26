@@ -10,8 +10,7 @@ public class UIObjectStringButton : UIObject, IUIObjectWithContainerItem, IUIObj
 
     // INTERFACE - IUIObjectWithImage
     [SerializeField] private Sprite _imageSprite;
-    public Sprite imageSprite { get { return _imageSprite; } }
-    public Image image { get; set; }
+    public Sprite imageSprite { get { return _imageSprite; } set { _imageSprite = value; } }
 
     // INTERFACE - IUIObjectWithImageColor
     [SerializeField] private UIObjectImageColor _imageColor = UIObjectImageColor.UI_OBJECT_IMAGE_COLOR_NEUTRAL;
@@ -24,7 +23,5 @@ public class UIObjectStringButton : UIObject, IUIObjectWithContainerItem, IUIObj
     public UIObjectTextColor textColor { get { return _textColor; } }
 
     // INTERFACE - IUIObjectWithStringValueClick
-    public Button button { get; set; }
-    public string uiObjectValue { get { return _textContent; } }
-    public System.Action<string,string> OnValueClickUIObjectDelegate { get; set; }
+    public string uiObjectValue { get { return textContent; } set { textContent = value; } }
 }

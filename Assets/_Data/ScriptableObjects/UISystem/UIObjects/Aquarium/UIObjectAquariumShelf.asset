@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b967b2a25558fe4c9a32217cf4abc08, type: 3}
   m_Name: UIObjectAquariumShelf
   m_EditorClassIdentifier: 
-  uiObjectName: Purchase Aquarium
-  uiObjectPrefab: {fileID: 8359935323159147712, guid: 369c1cfda9200424d9ce59b2e017a9c8, type: 3}
+  _uiObjectName: Purchase Aquarium
+  _uiObjectPrefab: {fileID: 8359935323159147712, guid: 369c1cfda9200424d9ce59b2e017a9c8, type: 3}
   uiObjectTab: {fileID: 11400000, guid: 2553f5d86a277744ba1f2bdfedea0201, type: 2}
   tabLength: 350
   uiObjectContainer: {fileID: 11400000, guid: 3c8e749ffc55d4828815bbae7c9d1eba, type: 2}
