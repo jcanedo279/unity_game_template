@@ -14,47 +14,43 @@ public class ItemWithImageChildData {
 [CreateAssetMenu(fileName = "UIObjectIconContainer", menuName = "UI System/UI Objects/UI Containers/UI Object Icon Container")]
 public class UIObjectIconContainer : UIObjectContainer<ItemWithImageChildData>
 {
-    public override Dictionary<string,UIObjectRuntimeProperties> FillFromComponentManager(
+    public override void FillContainerUIObjectRuntimeProperties(
         UIObjectRuntimeProperties uiObjectRuntimeProperties,
         UIComponent parentComponent,
-        Transform parentTransform,
-        UITheme uiTheme,
-        Vector2 uiObjectPosition)
+        UITheme uiTheme)
     {
-        FillContainerBase(uiObjectRuntimeProperties, parentComponent, parentTransform, uiTheme, uiObjectPosition);
-        if (itemUIObject is UIObjectIconButton uiObjectIconButton) {
-            FillContainerIconButtonItems(uiObjectIconButton,uiObjectRuntimeProperties,parentComponent,uiTheme,uiObjectPosition);
-        }
-        FillContainerSize(uiObjectRuntimeProperties, parentComponent, uiTheme);
-        uiObjectRuntimeProperties.isFilled = true;
-        return uiObjectRuntimePropertiesList.ToDictionary(runtimeProperties => runtimeProperties.propertyId.Id, runtimeProperties => runtimeProperties);
+        base.FillContainerUIObjectRuntimeProperties(uiObjectRuntimeProperties, parentComponent, uiTheme);
     }
-    public void FillContainerIconButtonItems(UIObjectIconButton itemObject,
-                                             UIObjectRuntimeProperties uiObjectRuntimeProperties,
-                                             UIComponent parentComponent,
-                                             UITheme uiTheme,
-                                             Vector2 uiObjectPosition) {
-        // Fill in each item.
-        uiObjectRuntimePropertiesList = new List<UIObjectRuntimeProperties>();
-        foreach (ItemWithImageChildData itemData in containerItemData)
-        {
-            UIObjectRuntimeProperties itemUIObjectRuntimeProperties = new UIObjectRuntimeProperties
+
+    public override Dictionary<string,UIObjectRuntimeProperties> FillChildUIObjectRuntimeProperties(
+        UIObjectRuntimeProperties runtimeProperties,
+        UIComponent parentComponent,
+        Transform parentTransform,
+        UITheme uiTheme)
+    {
+        Dictionary<string, UIObjectRuntimeProperties> childRuntimeProperties
+            = base.FillChildUIObjectRuntimeProperties(runtimeProperties, parentComponent, parentTransform, uiTheme);
+        if (itemUIObject is UIObjectIconButton uiObjectIconButton) {
+            runtimeProperties.itemRuntimePropertiesList = new List<UIObjectRuntimeProperties>();
+            foreach (ItemWithImageChildData itemData in containerItemData)
             {
-                propertyId = new UIObjectRuntimePropertiesId {
-                    uiComponentName=parentComponent.uiComponentName, uiObjectName=itemObject.uiObjectName, uiObjectValue=itemData.uiObjectValue
-                },
-                stringValueClickProperties = new IUIObjectWithStringValueClick.IUIObjectWithStringValueClickProperties {
-                    uiObjectValue = $"Container/{itemData.uiObjectValue}"
-                },
-                imageChildProperties = new IUIObjectWithImageChild.IUIObjectWithImageChildProperties {
-                    childImageSprite = itemData.sprite
-                }
-            };
-            uiObjectRuntimeProperties.containerProperties.itemRuntimePropertiesList = uiObjectRuntimePropertiesList;
-            itemObject.FillFromComponentManager(itemUIObjectRuntimeProperties,
-                                                parentComponent, uiObjectRuntimeProperties.containerProperties.contentGameObject.transform,
-                                                uiTheme, uiObjectPosition);
-            uiObjectRuntimePropertiesList.Add(itemUIObjectRuntimeProperties);
+                uiObjectIconButton.uiObjectValue = itemData.uiObjectValue;
+                uiObjectIconButton.childImageSprite = itemData.sprite;
+
+                // Fill the items and add their (sub)contents to the childRuntimeProperties (returned) and itemPropertiesList (container property).
+                uiObjectIconButton.FillFromComponentManager(parentComponent, runtimeProperties.contentGameObject.transform,
+                                                    uiTheme, Vector3.zero)
+                    .ToList().ForEach(propertyMap => childRuntimeProperties[propertyMap.Key] = propertyMap.Value);
+                runtimeProperties.itemRuntimePropertiesList.Add(
+                    childRuntimeProperties[new UIObjectRuntimePropertiesId { 
+                        uiComponentName=parentComponent.uiComponentName,
+                        uiObjectName=uiObjectIconButton.uiObjectName,
+                        uiObjectValue=uiObjectIconButton.uiObjectValue}.Id
+                    ]);
+            }
+        } else {
+            throw new System.ArgumentException($"The UIObjectIconContainer: {uiObjectName} must have a valid itemUIObject (UIObjectIconButton).");
         }
+        return childRuntimeProperties;
     }
 }

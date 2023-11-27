@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: UIObjectIconContainer
   m_EditorClassIdentifier: 
   _uiObjectName: PurchaseAquariumEdu
-  _uiObjectPrefab: {fileID: 8359935323159147712, guid: 369c1cfda9200424d9ce59b2e017a9c8, type: 3}
-  containerPrefab: {fileID: 7915037921130720752, guid: afb96ec42813b6544aecbb2a21054aae, type: 3}
+  _uiObjectPrefab: {fileID: 7915037921130720752, guid: afb96ec42813b6544aecbb2a21054aae, type: 3}
   itemUIObject: {fileID: 11400000, guid: 6c562c4d1a57448fab454cd20f187445, type: 2}
   containerItemData:
   - sprite: {fileID: 21300000, guid: a96743fbd7c8d4e16a0650c6a71e5138, type: 3}

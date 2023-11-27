@@ -18,22 +18,28 @@ public interface IUIObjectWithContainerItem : IUIObjectWithSize,
 
 public abstract class UIObjectContainer<TContainerItem> : UIObject
 {
-    [SerializeField] private GameObject containerPrefab;
     [SerializeField] protected UIObject itemUIObject;
     [SerializeField] public List<TContainerItem> containerItemData = new List<TContainerItem>();
-    [SerializeField] protected List<UIObjectRuntimeProperties> uiObjectRuntimePropertiesList;
     [SerializeField] private UIObjectContainerLayoutDirection layoutDirection;
 
-    public override Dictionary<string,UIObjectRuntimeProperties> FillFromComponentManager(
-        UIObjectRuntimeProperties uiObjectRuntimeProperties,
+
+    // DERIVED - UIOBJECT
+    // ------------------------------------------------------------------------------------------------------------------
+    public override UIObjectRuntimeProperties FillUIObjectRuntimeProperties(
         UIComponent parentComponent,
         Transform parentTransform,
         UITheme uiTheme,
         Vector2 uiObjectPosition)
     {
-        FillContainerBase(uiObjectRuntimeProperties, parentComponent, parentTransform, uiTheme, uiObjectPosition);
-        uiObjectRuntimeProperties.isFilled = true;
-        return new Dictionary<string, UIObjectRuntimeProperties>();
+        if (uiObjectPrefab == null)
+        {
+            throw new ArgumentException($"Container UIObject: {uiObjectName} does not have a valid uiObjectPrefab.");
+        }
+        UIObjectRuntimeProperties runtimeProperties
+            = base.FillUIObjectRuntimeProperties(parentComponent, parentTransform, uiTheme, uiObjectPosition);
+        FillContainerUIObjectRuntimeProperties(runtimeProperties, parentComponent, uiTheme);
+        FillContainerSize(runtimeProperties, parentComponent, uiTheme);
+        return runtimeProperties;
     }
 
     public override void RenderFromComponentManager(
@@ -45,42 +51,36 @@ public abstract class UIObjectContainer<TContainerItem> : UIObject
         base.RenderFromComponentManager(uiObjectRuntimeProperties,parentComponent,uiTheme);
     }
 
-    public void FillContainerBase(UIObjectRuntimeProperties uiObjectRuntimeProperties,
-                                  UIComponent parentComponent,
-                                  Transform parentTransform,
-                                  UITheme uiTheme,
-                                  Vector2 uiObjectPosition) {
-        if (containerPrefab == null)
-        {
-            throw new ArgumentException($"Container UIObject: {uiObjectName} does not have a valid containerPrefab.");
-        }
-        uiObjectRuntimeProperties.uiObjectRuntime = Instantiate(containerPrefab, parentTransform);
-        uiObjectRuntimeProperties.RenderFromComponentManager = RenderFromComponentManager;
+    // UI OBJECT CONTAINER
+    // ------------------------------------------------------------------------------------------------------------------
+    public virtual void FillContainerUIObjectRuntimeProperties(
+        UIObjectRuntimeProperties uiObjectRuntimeProperties,
+        UIComponent parentComponent,
+        UITheme uiTheme)
+    {
         // The Content is located in ScrollView->Viewport->Content which is a nested GetComponent,
         // store reference to Content here.
         Transform viewportTransform = uiObjectRuntimeProperties.uiObjectRuntime.transform.Find("Viewport");
-        uiObjectRuntimeProperties.containerProperties = new UIObjectRuntimeProperties.IUIObjectWithContainerProperties {
-            contentGameObject = viewportTransform.Find("Content").gameObject,
-            layoutDirection = layoutDirection,
-        };
+        Debug.Log(uiObjectRuntimeProperties.uiObjectRuntime);
+        uiObjectRuntimeProperties.contentGameObject = viewportTransform.Find("Content").gameObject;
+        uiObjectRuntimeProperties.layoutDirection = layoutDirection;
+        uiObjectRuntimeProperties.itemRuntimePropertiesList = new List<UIObjectRuntimeProperties>();
+
         if (itemUIObject is IUIObjectWithContainerItem uiObjectWithContainerData) {
-            uiObjectRuntimeProperties.containerProperties.itemSize = uiObjectWithContainerData.objectSize;
+            uiObjectRuntimeProperties.itemSize = uiObjectWithContainerData.objectSize;
         } else {
             throw new ArgumentException($"Item UIObject: {itemUIObject.uiObjectName} does not implement IUIObjectWithContainerItem.");
         }
         float objectSpacing = uiTheme.UISpacingValueFromEnum(parentComponent.uiObjectSpacing);
         int objectMargin = (int)uiTheme.UIMarginValueFromEnum(parentComponent.uiObjectMargin);
 
-        // Fill in container transform (including size).
-        uiObjectRuntimeProperties.rectTransform = uiObjectRuntimeProperties.uiObjectRuntime.GetComponent<RectTransform>();
-        uiObjectRuntimeProperties.rectTransform.localPosition = uiObjectPosition;
         // Fill in item spacing.
         HorizontalOrVerticalLayoutGroup layoutGroup = layoutDirection switch
         {
             UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_SCROLL_HORIZONTAL or
             UIObjectContainerLayoutDirection.LAYOUT_DIRECTION_HORIZONTAL
-                => uiObjectRuntimeProperties.containerProperties.contentGameObject.AddComponent<HorizontalLayoutGroup>(),
-            _ => uiObjectRuntimeProperties.containerProperties.contentGameObject.AddComponent<VerticalLayoutGroup>(),
+                => uiObjectRuntimeProperties.contentGameObject.AddComponent<HorizontalLayoutGroup>(),
+            _ => uiObjectRuntimeProperties.contentGameObject.AddComponent<VerticalLayoutGroup>(),
         };
         FillLayoutGroup(layoutGroup, objectSpacing);
         FillScrollDirection(uiObjectRuntimeProperties);
@@ -94,10 +94,10 @@ public abstract class UIObjectContainer<TContainerItem> : UIObject
                                   UIComponent parentComponent, UITheme uiTheme) {
         float objectSpacing = uiTheme.UISpacingValueFromEnum(parentComponent.uiObjectSpacing);
         int objectMargin = (int)uiTheme.UIMarginValueFromEnum(parentComponent.uiObjectMargin);
-        Vector2 itemSize = uiObjectRuntimeProperties.containerProperties.itemSize;
-        UIObjectContainerLayoutDirection layoutDirection = uiObjectRuntimeProperties.containerProperties.layoutDirection;
+        Vector2 itemSize = uiObjectRuntimeProperties.itemSize;
+        UIObjectContainerLayoutDirection layoutDirection = uiObjectRuntimeProperties.layoutDirection;
         int numberItems = 0;
-        foreach (UIObjectRuntimeProperties itemProperties in uiObjectRuntimeProperties.containerProperties.itemRuntimePropertiesList) {
+        foreach (UIObjectRuntimeProperties itemProperties in uiObjectRuntimeProperties.itemRuntimePropertiesList) {
             numberItems += Convert.ToInt32(itemProperties.uiObjectRuntime.gameObject.activeSelf);
         }
         switch (layoutDirection) {

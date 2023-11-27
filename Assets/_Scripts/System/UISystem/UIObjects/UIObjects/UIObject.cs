@@ -7,45 +7,73 @@ public class UIObject : ScriptableObject
 {
     [SerializeField] string _uiObjectName;
     public string uiObjectName { get { return _uiObjectName; } }
+    public virtual string uiObjectValue { get; set; }
     [SerializeField] GameObject _uiObjectPrefab;
-    GameObject uiObjectPrefab { get { return _uiObjectPrefab; } }
+    public GameObject uiObjectPrefab { get { return _uiObjectPrefab; } }
 
 
-    public virtual Dictionary<string,UIObjectRuntimeProperties> FillFromComponentManager(
-        UIObjectRuntimeProperties uiObjectRuntimeProperties,
+    public Dictionary<string,UIObjectRuntimeProperties> FillFromComponentManager(
         UIComponent parentComponent,
-        // This may be different than parentComponent if we are filling from a UIObject Container.
+        Transform parentTransform, // This may be different than parentComponent if we are filling from a UIObject Container.
+        UITheme uiTheme,
+        Vector2 uiObjectPosition)
+    {
+        UIObjectRuntimeProperties runtimeProperties
+            = FillUIObjectRuntimeProperties(parentComponent, parentTransform, uiTheme, uiObjectPosition);
+        Dictionary<string, UIObjectRuntimeProperties> filledRuntimeProperties
+            = FillChildUIObjectRuntimeProperties(runtimeProperties, parentComponent, parentTransform, uiTheme);
+        filledRuntimeProperties.Add(runtimeProperties.propertyId.Id, runtimeProperties);
+        runtimeProperties.isFilled = true;
+        return filledRuntimeProperties;
+    }
+
+    public virtual UIObjectRuntimeProperties FillUIObjectRuntimeProperties(
+        UIComponent parentComponent,
         Transform parentTransform,
         UITheme uiTheme,
         Vector2 uiObjectPosition)
     {
-        uiObjectRuntimeProperties.uiObjectRuntime = Instantiate(uiObjectPrefab, parentTransform);
-        uiObjectRuntimeProperties.rectTransform
-            = uiObjectRuntimeProperties.uiObjectRuntime.gameObject.GetComponent<RectTransform>();
-        uiObjectRuntimeProperties.rectTransform.localPosition = uiObjectPosition;
-        FillUIObjectByInterface(uiObjectRuntimeProperties, parentComponent, uiTheme);
-        uiObjectRuntimeProperties.isFilled = true;
+        GameObject runtimeObject = Instantiate(uiObjectPrefab, parentTransform);
+        UIObjectRuntimeProperties runtimeProperties = new UIObjectRuntimeProperties {
+            propertyId = new UIObjectRuntimePropertiesId {
+                uiComponentName=parentComponent.uiComponentName,uiObjectName=uiObjectName,uiObjectValue=uiObjectValue
+            },
+            uiObjectRuntime = runtimeObject,
+            rectTransform = runtimeObject.gameObject.GetComponent<RectTransform>(),
+            RenderFromComponentManager = RenderFromComponentManager
+        };
+        runtimeProperties.rectTransform.localPosition = uiObjectPosition;
+        FillUIObjectByInterface(runtimeProperties, parentComponent, uiTheme);
+        return runtimeProperties;
+    }
+
+    // Fill in UIObjects which implement an IUIObject interface.
+    private void FillUIObjectByInterface(UIObjectRuntimeProperties runtimeProperties,
+                                         UIComponent parentComponent,
+                                         UITheme uiTheme)
+    {
+        IUIObjectFillers.MaybeFillUIObjectSize(runtimeProperties, this);
+        IUIObjectFillers.MaybeFillUIObjectImage(runtimeProperties, this);
+        IUIObjectFillers.MaybeFillUIObjectImageColor(runtimeProperties, this, uiTheme);
+        IUIObjectFillers.MaybeFillUIObjectTextChild(runtimeProperties, this, uiTheme);
+        IUIObjectFillers.MaybeFillUIObjectButton(runtimeProperties, parentComponent, this);
+        IUIObjectFillers.MaybeFillUIObjectImageChild(runtimeProperties, this);
+    }
+
+    public virtual Dictionary<string,UIObjectRuntimeProperties> FillChildUIObjectRuntimeProperties(
+        UIObjectRuntimeProperties runtimeProperties,
+        UIComponent parentComponent,
+        Transform parentTransform,
+        UITheme uiTheme)
+    {
         return new Dictionary<string, UIObjectRuntimeProperties>();
     }
 
     public virtual void RenderFromComponentManager(
-        UIObjectRuntimeProperties uiObjectRuntimeProperties,
+        UIObjectRuntimeProperties runtimeProperties,
         UIComponent parentComponent,
         UITheme uiTheme)
     {
         // No-op... for now :>
-    }
-
-    // Fill in UIObjects which implement an IUIObject interface.
-    private void FillUIObjectByInterface(UIObjectRuntimeProperties uiObjectRuntimeProperties,
-                                         UIComponent parentComponent,
-                                         UITheme uiTheme)
-    {
-        IUIObjectFillers.MaybeFillUIObjectSize(uiObjectRuntimeProperties, this);
-        IUIObjectFillers.MaybeFillUIObjectImage(uiObjectRuntimeProperties, this);
-        IUIObjectFillers.MaybeFillUIObjectImageColor(uiObjectRuntimeProperties, this, uiTheme);
-        IUIObjectFillers.MaybeFillUIObjectTextChild(uiObjectRuntimeProperties, this, uiTheme);
-        IUIObjectFillers.MaybeFillUIObjectButton(uiObjectRuntimeProperties, parentComponent, this);
-        IUIObjectFillers.MaybeFillUIObjectImageChild(uiObjectRuntimeProperties, this);
     }
 }

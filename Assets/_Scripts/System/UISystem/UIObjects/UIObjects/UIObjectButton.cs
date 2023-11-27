@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class UIObjectButton : UIObject,
                               IUIObjectWithSize,
                               IUIObjectWithImage, IUIObjectWithImageColor,
-                              IUIObjectWithTextChild, IUIObjectWithClick {
+                              IUIObjectWithTextChild, IUIObjectWithClick,
+                              IUIObjectWithValue {
 
     // INTERFACE - IUIObjectWithSize
     [SerializeField] private Vector2 _objectSize = new Vector2(320,60);

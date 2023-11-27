@@ -22,5 +22,5 @@ public class UIObjectIconButton : UIObject, IUIObjectWithContainerItem, IUIObjec
 
     // INTERFACE - IUIObjectWithStringValueClick
     [SerializeField] private string _uiObjectValue;
-    public string uiObjectValue { get { return _uiObjectValue; } set { _uiObjectValue = value; } }
+    public override string uiObjectValue { get { return _uiObjectValue; } set { _uiObjectValue = value; } }
 }

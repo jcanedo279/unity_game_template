@@ -28,10 +28,10 @@ public class AquariumManager : MonoBehaviour {
         if (uiObjectResponse.uiComponentName=="PurchaseAquariumComponent" && uiObjectResponse.uiObjectName=="PurchaseAquariumItem") {
             OnOpenPurchaseAquariumUI(uiObjectResponse);
         }
-        if (uiObjectResponse.uiComponentName=="PurchaseAquariumEduComponent" && uiObjectResponse.uiObjectValue=="Container/CheckMark") {
+        if (uiObjectResponse.uiComponentName=="PurchaseAquariumEduComponent" && uiObjectResponse.uiObjectValue=="CheckMark") {
             OnPurchaseAquarium();
         }
-        if (uiObjectResponse.uiComponentName=="PurchaseAquariumEduComponent" && uiObjectResponse.uiObjectValue=="Container/Cross") {
+        if (uiObjectResponse.uiComponentName=="PurchaseAquariumEduComponent" && uiObjectResponse.uiObjectValue=="Cross") {
             OnCancelPurchaseAquarium();
         }
     }

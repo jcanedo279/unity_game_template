@@ -172,19 +172,16 @@ public class UIComponentManager : MonoBehaviour {
         Vector2 currentUIObjectPosition = new(uiComponent.startingUIObjectPosition.x,
                                                       uiComponent.startingUIObjectPosition.y);
         foreach (UIObject uiObject in uiComponent.uiObjects) {
-            UIObjectRuntimeProperties runtimeProperties = new UIObjectRuntimeProperties {
-                propertyId = new UIObjectRuntimePropertiesId {
-                    uiComponentName=uiComponentName,
-                    uiObjectName=uiObject.uiObjectName
-                }
-            };
-            uiObject.FillFromComponentManager(runtimeProperties,
-                                              uiComponent, uiComponent.uiComponentRuntime.transform,
+            uiObject.FillFromComponentManager(uiComponent, uiComponent.uiComponentRuntime.transform,
                                               uiComponentManagerData.uiTheme, currentUIObjectPosition)
                     .ToList().ForEach(propertyMap => loadedObjectPropertyIdToObjectRuntimeProperties[propertyMap.Key] = propertyMap.Value);
-            loadedObjectPropertyIdToObjectRuntimeProperties.Add(runtimeProperties.propertyId.Id, runtimeProperties);
+            // foreach (string propId in loadedObjectPropertyIdToObjectRuntimeProperties.Keys) {
+            //     Debug.Log(propId);
+            // }
             currentUIObjectPosition -= new Vector2(0f,
-                                                   uiObjectSpacing+runtimeProperties.rectTransform.rect.height);
+                                                   uiObjectSpacing+loadedObjectPropertyIdToObjectRuntimeProperties[
+                                                       new UIObjectRuntimePropertiesId { uiComponentName=uiComponentName,uiObjectName=uiObject.uiObjectName }.Id
+                                                    ].rectTransform.rect.height);
         }
         yield return 0;
     }

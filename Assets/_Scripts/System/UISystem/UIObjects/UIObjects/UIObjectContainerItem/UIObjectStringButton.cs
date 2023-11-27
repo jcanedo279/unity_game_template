@@ -23,5 +23,5 @@ public class UIObjectStringButton : UIObject, IUIObjectWithContainerItem, IUIObj
     public UIObjectTextColor textColor { get { return _textColor; } }
 
     // INTERFACE - IUIObjectWithStringValueClick
-    public string uiObjectValue { get { return textContent; } set { textContent = value; } }
+    public override string uiObjectValue { get { return textContent; } set { textContent = value; } }
 }
