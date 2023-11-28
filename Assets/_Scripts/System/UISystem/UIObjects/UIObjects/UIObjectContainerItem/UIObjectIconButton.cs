@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class UIObjectIconButton : UIObject, IUIObjectWithContainerItem, IUIObjectWithImageChild {
     // INTERFACE - IUIObjectWithSize
     [SerializeField] private Vector2 _objectSize = new Vector2(320,60);
-    public Vector2 objectSize { get { return _objectSize; } }
+    public Vector2 objectSize { get { return _objectSize; } set { _objectSize = value; } }
 
     // INTERFACE - IUIObjectWithImage
     [SerializeField] private Sprite _imageSprite;
@@ -14,7 +14,7 @@ public class UIObjectIconButton : UIObject, IUIObjectWithContainerItem, IUIObjec
 
     // INTERFACE - IUIObjectWithImageColor
     [SerializeField] private UIObjectImageColor _imageColor = UIObjectImageColor.UI_OBJECT_IMAGE_COLOR_NEUTRAL;
-    public UIObjectImageColor imageColor { get { return _imageColor; } }
+    public UIObjectImageColor imageColor { get { return _imageColor; } set { _imageColor = value; } }
 
     // INTERFACE - IUIObjectWithImageChild
     [SerializeField] private Sprite _childImageSprite;
